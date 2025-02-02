@@ -9,7 +9,7 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
-//go:embed all:frontend/dist
+//go:embed all:frontend/.nuxt
 var assets embed.FS
 
 func main() {
@@ -45,7 +45,6 @@ func main() {
 			About: &mac.AboutInfo{
 				Title:   "My Application",
 				Message: "© 2021 Me",
-				Icon:    []byte("frontend/src/assets/images/pdmIcon.svg"),
 			},
 		},
 	})
