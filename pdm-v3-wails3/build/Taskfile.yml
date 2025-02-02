@@ -27,18 +27,16 @@ tasks:
     sources:
       - "**/*"
     generates:
-      - .output/*
+      - dist/*
     deps:
       - task: install:frontend:deps
       - task: generate:bindings
     cmds:
-      - 'echo "frontend Is production: {{.PRODUCTION}}"'
       - npm run {{.BUILD_COMMAND}} -q
     env:
       PRODUCTION: '{{.PRODUCTION | default "false"}}'
     vars:
-      PRODUCTION: '{{.PRODUCTION | default "false"}}'
-      BUILD_COMMAND: '{{if eq .PRODUCTION "true"}}build{{else}}dev{{end}}'
+      BUILD_COMMAND: '{{if eq .PRODUCTION "true"}}build{{else}}build:dev{{end}}'
 
 
   generate:bindings:
