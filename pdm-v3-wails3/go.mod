@@ -1,4 +1,4 @@
-module changeme
+module pdm
 
 go 1.22.4
 

@@ -47,11 +47,14 @@ func main() {
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
 	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title: "Window 1",
+		Title:  "Window 1",
+		Width:  1280,
+		Height: 960,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
 			TitleBar:                application.MacTitleBarHiddenInset,
+			Appearance:              "NSAppearanceNameDarkAqua",
 		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",

@@ -1,10 +1,19 @@
 <script setup>
-import {GreetService} from '../../bindings/changeme/';
-import {Events} from "../../../runtime.js";
+import {GreetService} from '../../bindings/pdm/index.js';
 import {ref} from 'vue';
+import {useAppStore} from "@/stores/app.js";
+import {computed} from 'vue';
+import {Events} from '@wailsio/runtime';
 
 const resultElement = ref('');
-const timeElement = ref('');
+const appStore = useAppStore();
+const time = computed(()=>appStore.time);
+
+const localTime = ref("");
+
+Events.On('time', (time) => {
+  localTime.value = time.data;
+});
 
 window.doGreet = () => {
   let name = document.getElementById('name').value;
@@ -12,15 +21,14 @@ window.doGreet = () => {
     name = 'anonymous';
   }
   GreetService.Greet(name).then((result) => {
+    console.log(result);
     resultElement.value = result;
   }).catch((err) => {
     console.log(err);
+    resultElement.value = 'Error: ' + err;
   });
 }
 
-Events.On('time', (time) => {
-  timeElement.value = time.data;
-});
 
 </script>
 
@@ -31,8 +39,9 @@ Events.On('time', (time) => {
     <p>Enter your name:</p>
     <input id="name" type="text" />
     <button onclick="doGreet()">Greet</button>
-    <p id="result">{{ resultElement }}</p>
-    <p>Time: <span >{{timeElement}}}</span></p>
+    <p id="result">The output is: {{ resultElement }}</p>
+    <p>Time: {{time}}</p>
+    <p>Local Time: {{localTime}}</p>
   </div>
 </template>
 

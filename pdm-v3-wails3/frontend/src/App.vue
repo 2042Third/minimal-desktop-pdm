@@ -1,6 +1,13 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
+
+import {Events} from '@wailsio/runtime';
+import {useAppStore} from "@/stores/app.js";
+const {updateTime} = useAppStore();
+
+Events.On('time', (time) => {});
+
 </script>
 
 <template>
@@ -30,6 +37,7 @@ header {
 .logo {
   display: block;
   margin: 0 auto 2rem;
+  background: transparent;
 }
 
 nav {
