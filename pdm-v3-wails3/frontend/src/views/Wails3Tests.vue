@@ -12,7 +12,7 @@ const time = computed(()=>appStore.time);
 const localTime = ref("");
 
 Events.On('time', (time) => {
-  localTime.value = time.data;
+  localTime.value = time.data[0];
 });
 
 window.doGreet = () => {
@@ -34,7 +34,6 @@ window.doGreet = () => {
 
 <template>
   <div class="about">
-
     <h1>Wails 3 Tests</h1>
     <p>Enter your name:</p>
     <input id="name" type="text" />
@@ -45,20 +44,28 @@ window.doGreet = () => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .about {
-  margin: 3rem auto auto;
-  min-height: 100vh;
+  height: 100%; /* Instead of 100vh */
+  width: 100%; /* Take full width of parent */
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+  justify-content: center; /* Centers content vertically */
+  padding: 2rem;
+  box-sizing: border-box;
 }
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
+
+input {
+  max-width: 300px;
+  width: 100%;
+  padding: 0.5rem;
 }
+
+button {
+  padding: 0.5rem 1rem;
+}
+
+/* Remove the media query unless you need specific large-screen behavior */
 </style>

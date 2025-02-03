@@ -1,14 +1,16 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  --vt-c-white: rgba(255, 255, 255, 1);         /* #ffffff */
+  --vt-c-white-trans: rgba(248, 248, 248, 0.29);    /* #f8f8f8 */
+  --vt-c-white-soft: rgba(248, 248, 248, 1);    /* #f8f8f8 */
+  --vt-c-white-mute: rgba(242, 242, 242, 1);    /* #f2f2f2 */
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
+  --vt-c-black: rgba(24, 24, 24, 1);            /* #181818 */
+  --vt-c-black-trans: rgba(24, 24, 24, 0.29);   /* #181818 */
+  --vt-c-black-soft: rgba(34, 34, 34, 1);       /* #222222 */
+  --vt-c-black-mute: rgba(40, 40, 40, 1);       /* #282828 */
 
-  --vt-c-indigo: #2c3e50;
+  --vt-c-indigo: rgba(44, 62, 80, 1);           /* #2c3e50 */
 
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
@@ -24,6 +26,7 @@
 /* semantic color variables for this project */
 :root {
   --color-background: var(--vt-c-white);
+  --color-background-trans: var(--vt-c-white-trans);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
 
@@ -39,6 +42,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--vt-c-black);
+    --color-background-trans: var(--vt-c-black-trans);
     --color-background-soft: var(--vt-c-black-soft);
     --color-background-mute: var(--vt-c-black-mute);
 
