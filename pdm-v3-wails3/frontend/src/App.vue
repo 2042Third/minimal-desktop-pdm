@@ -37,7 +37,7 @@ header {
   display: flex;
   flex-direction: column;
   padding: 1rem;
-  padding-top: 2rem;
+  padding-top: 8rem;
   border-right: 1px solid var(--color-border);
   background-color: var(--color-background-trans);
 }

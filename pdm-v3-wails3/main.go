@@ -4,6 +4,7 @@ import (
 	"embed"
 	_ "embed"
 	"log"
+	"pdm/services"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -32,6 +33,7 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
+			application.NewService(&services.NativeModules{}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -46,10 +48,12 @@ func main() {
 	// 'Mac' options tailor the window when running on macOS.
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
-	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title:  "Window 1",
-		Width:  1280,
-		Height: 960,
+	mainWindow := app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+		Title:     "Window 1",
+		Width:     1280,
+		Height:    960,
+		MinWidth:  700,
+		MinHeight: 500,
 		Mac: application.MacWindow{
 			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
@@ -69,6 +73,27 @@ func main() {
 			time.Sleep(time.Second)
 		}
 	}()
+
+	appState := services.NewAppState(app)
+	if err := appState.Init(); err != nil {
+		log.Fatalf("Error initializing app state: %s", err.Error())
+	}
+
+	contextMenu := app.NewMenu()
+	contextMenu.Add("Click Me").OnClick(func(data *application.Context) {
+		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
+	})
+
+	globalContextMenu := app.NewMenu()
+	globalContextMenu.Add("Default context menu item").OnClick(func(data *application.Context) {
+		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
+	})
+
+	// Registering the menu with a window will make it available to that window only
+	mainWindow.RegisterContextMenu("test", contextMenu)
+
+	// Registering the menu with the app will make it available to all windows
+	app.RegisterContextMenu("test", globalContextMenu)
 
 	// Run the application. This blocks until the application has been exited.
 	err := app.Run()
