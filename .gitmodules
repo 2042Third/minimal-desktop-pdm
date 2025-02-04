@@ -1,0 +1,3 @@
+[submodule "pdm-v3-wails3/pdm/encrypted-sqlite"]
+	path = pdm-v3-wails3/pdm/encrypted-sqlite
+	url = https://github.com/2042Third/encrypted-sqlite.git
