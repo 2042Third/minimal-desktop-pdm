@@ -16,6 +16,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 	"strings"
 	"unsafe"
@@ -144,6 +145,8 @@ func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
 func (s *Stmt) Query(args []driver.Value) (driver.Rows, error) {
 	query := C.CString(s.sql)
 	defer C.free(unsafe.Pointer(query))
+
+	log.Printf("Query: %s", s.sql)
 
 	if C.pdm_db_execute(s.conn.db, query) == 0 { // execution failed
 		return nil, errors.New("query execution failed")
