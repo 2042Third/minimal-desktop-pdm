@@ -27,28 +27,29 @@ func main() {
 		panic(err)
 	}
 
-	// Example Query: select from the table
-	rows, err := db.Query("SELECT id, value FROM test")
+	//// Example Query: select from the table
+	//rows, err := db.Query("SELECT id, value FROM test")
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	// Example Query: prepared statement
+	stmt, err := db.Prepare("SELECT id, value FROM test WHERE id > ?")
 	if err != nil {
 		panic(err)
 	}
+
+	rows, err := stmt.Query(1)
+	if err != nil {
+		panic(err)
+	}
+
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
 			panic(err)
 		}
 	}(rows)
-
-	//// Example Query: prepared statement
-	//stmt, err := db.Prepare("SELECT id, value FROM test WHERE id > ?")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//
-	//rows, err := stmt.Query(1)
-	//if err != nil {
-	//	panic(err)
-	//}
 
 	// Get the column names from your driver implementation.
 	columns, err := rows.Columns()
