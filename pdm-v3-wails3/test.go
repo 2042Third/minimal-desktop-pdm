@@ -4,16 +4,34 @@ import "C"
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	_ "pdm/pdmsqlite"
+	"pdm/services"
 )
 
 func main() {
+	basicSqlite()
+
+	db := services.NewDatabase()
+	db.Open("./test/test.db", "secret")
+	defer db.Close()
+	db.RunSmallTest()
+}
+
+func basicSqlite() {
+	log.Printf("Begin basicSqlite")
 	// Use a DSN in the form "/path/to/db?password=yourpass"
 	db, err := sql.Open("pdmsqlite", "./test/test.db?password=secret")
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		log.Printf("Closing db, basicSqlite end.")
+		err := db.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(db)
 
 	// Example Exec: create a table
 	_, err = db.Exec("CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY, value TEXT)")
@@ -79,4 +97,5 @@ func main() {
 		}
 		fmt.Println()
 	}
+
 }

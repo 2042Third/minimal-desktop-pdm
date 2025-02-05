@@ -16,9 +16,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"strings"
+	"time"
 	"unsafe"
 )
 
@@ -48,6 +48,10 @@ type Rows struct {
 	cols int
 	// Indicates that we've reached the end.
 	done bool
+}
+
+type SQLiteTx struct {
+	conn *Conn
 }
 
 // DSN holds the parsed data source name.
@@ -118,9 +122,28 @@ func (c *Conn) Close() error {
 	return nil
 }
 
-// Begin starts a transaction (not implemented).
+// Begin starts a transaction.
 func (c *Conn) Begin() (driver.Tx, error) {
-	return nil, errors.New("transactions not implemented")
+	if rv := C.pdm_db_begin(c.db); SQLiteResultCode(rv) != SQLITE_OK {
+		return nil, errors.New("failed to begin transaction")
+	}
+	return &SQLiteTx{c}, nil
+}
+
+// Commit commits the transaction.
+func (tx *SQLiteTx) Commit() error {
+	if rv := C.pdm_db_commit(tx.conn.db); SQLiteResultCode(rv) != SQLITE_OK {
+		return errors.New("failed to commit transaction")
+	}
+	return nil
+}
+
+// Rollback rolls back the transaction.
+func (tx *SQLiteTx) Rollback() error {
+	if rv := C.pdm_db_rollback(tx.conn.db); SQLiteResultCode(rv) != SQLITE_OK {
+		return errors.New("failed to rollback transaction")
+	}
+	return nil
 }
 
 // Close for Stmt is a no-op.
@@ -144,8 +167,7 @@ func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
 		case int:
 			rc = C.pdm_db_bind_int(stmt, idx, C.int(v))
 		case int64:
-			// Note: ideally use a 64-bit binding if available.
-			rc = C.pdm_db_bind_int(stmt, idx, C.int(v))
+			rc = C.pdm_db_bind_int64(stmt, idx, C.int64_t(v))
 		case float64:
 			rc = C.pdm_db_bind_double(stmt, idx, C.double(v))
 		case bool:
@@ -166,6 +188,12 @@ func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
 			} else {
 				rc = C.pdm_db_bind_blob(stmt, idx, nil, 0)
 			}
+		case time.Time:
+			// Convert time.Time to string in SQLite format
+			timeStr := v.UTC().Format("2006-01-02 15:04:05.999")
+			cs := C.CString(timeStr)
+			rc = C.pdm_db_bind_text(stmt, idx, cs)
+			C.free(unsafe.Pointer(cs))
 		default:
 			return fmt.Errorf("unsupported argument type: %T", v)
 		}
@@ -211,7 +239,6 @@ func (s *Stmt) Query(args []driver.Value) (driver.Rows, error) {
 		return nil, err
 	}
 	cols := int(C.pdm_db_column_count(stmt))
-	log.Printf("Query: %s, with %d columns", s.sql, cols)
 	return &Rows{
 		stmt: stmt,
 		cols: cols,
@@ -258,7 +285,18 @@ func (r *Rows) Next(dest []driver.Value) error {
 			case SQLITE_TEXT:
 				text := C.pdm_db_column_text(r.stmt, C.int(i))
 				if text != nil {
-					val = C.GoString((*C.char)(text))
+					textStr := C.GoString((*C.char)(text))
+					// Try to parse as timestamp if the column name suggests it's a timestamp
+					colName := strings.ToLower(C.GoString(C.pdm_db_column_name(r.stmt, C.int(i))))
+					if strings.Contains(colName, "at") || strings.Contains(colName, "date") || strings.Contains(colName, "time") {
+						if t, err := time.Parse("2006-01-02 15:04:05.999", textStr); err == nil {
+							val = t
+						} else {
+							val = textStr
+						}
+					} else {
+						val = textStr
+					}
 				} else {
 					val = ""
 				}
