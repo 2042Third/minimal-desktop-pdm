@@ -86,3 +86,86 @@ func (d *Database) RunSmallTest() {
 	db.Delete(&user)
 	fmt.Printf("Deleted user: %v\n", user)
 }
+
+func (d *Database) RunTransactionTest1() {
+	db := d.GetDB()
+
+	// Transaction example
+	err := db.Transaction(func(tx *gorm.DB) error {
+		// Create user within transaction
+		if err := tx.Create(&models.User{
+			Name:  "Transaction User",
+			Email: "trans@example.com",
+		}).Error; err != nil {
+			// Return error will rollback
+			return err
+		}
+
+		// Create another record within the same transaction
+		if err := tx.Create(&models.User{
+			Name:  "Another User",
+			Email: "another@example.com",
+		}).Error; err != nil {
+			// Return error will rollback
+			return err
+		}
+
+		// Return nil will commit the whole transaction
+		return nil
+	})
+
+	if err != nil {
+		fmt.Printf("Transaction failed: %v\n", err)
+	} else {
+		fmt.Println("Transaction successful")
+	}
+
+}
+
+func (d *Database) RunQueryTest() {
+	db := d.GetDB()
+
+	fmt.Printf("Running Query Test\n")
+
+	// Using where conditions
+	var users []models.User
+	db.Where("name LIKE ?", "%John%").Find(&users)
+
+	// Check the result
+	for _, u := range users {
+		fmt.Printf("User: %v\n", u)
+	}
+	fmt.Printf("Running Query Test 2\n")
+
+	// Using order
+	db.Order("name desc").Find(&users)
+
+	// Check the result
+	for _, u := range users {
+		fmt.Printf("User: %v\n", u)
+	}
+
+	fmt.Printf("Running Query Test 3\n")
+	// Using limit
+	db.Limit(10).Find(&users)
+
+	// Check the result
+	for _, u := range users {
+		fmt.Printf("User: %v\n", u)
+	}
+
+	fmt.Printf("Running Query Test 4\n")
+	// Combining multiple conditions
+	db.Where("name LIKE ?", "%John%").
+		Or("email LIKE ?", "%example.com%").
+		Order("created_at desc").
+		Limit(10).
+		Find(&users)
+
+	// Check the result
+	for _, u := range users {
+		fmt.Printf("User: %v\n", u)
+	}
+
+	fmt.Printf("Query Test End.\n")
+}

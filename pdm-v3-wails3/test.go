@@ -16,6 +16,8 @@ func main() {
 	db.Open("./test/test.db", "secret")
 	defer db.Close()
 	db.RunSmallTest()
+	db.RunTransactionTest1()
+	db.RunQueryTest()
 }
 
 func basicSqlite() {
