@@ -1,7 +1,7 @@
 package pdmsqlite
 
 /*
-#cgo LDFLAGS: -L${SRCDIR}/../pdm/encrypted-sqlite/build -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -L${SRCDIR}/../pdm/encrypted-sqlite -lwrapper -lencrypted_sqlite -lcryptosqlite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../pdm/encrypted-sqlite/build -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -L${SRCDIR}/../pdm/encrypted-sqlite -lwrapper -lencrypted_sqlite -lcryptosqlite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite -lstdc++
 
 #cgo CXXFLAGS: -std=c++20
 #cgo CFLAGS: -I${SRCDIR}/../pdm/encrypted-sqlite -I${SRCDIR}
@@ -22,79 +22,80 @@ import (
 	"unsafe"
 )
 
+func init() {
+	sql.Register("pdmsqlite", &Driver{})
+}
+
+// Driver implements database/sql/driver.Driver.
 type Driver struct{}
 
+// Conn represents a connection to the encrypted database.
 type Conn struct {
 	db *C.PDMDatabase
 }
 
+// Stmt represents a prepared statement.
 type Stmt struct {
 	conn *Conn
 	sql  string
 }
 
+// Rows holds an active result set.
 type Rows struct {
-	stmt   *Stmt
-	result *C.PDMReturnTable
-	curr   int
+	// The prepared statement used to step through the result rows.
+	stmt *C.PDMStatement
+	// Number of columns in the result.
+	cols int
+	// Indicates that we've reached the end.
+	done bool
 }
 
-func init() {
-	sql.Register("pdmsqlite", &Driver{})
-}
-
+// DSN holds the parsed data source name.
 type DSN struct {
 	Path     string
 	Password string
 }
 
-// parseDSN parses a DSN string in the format "/path/to/db?password=secretpass".
-// It extracts the file path and the password from the query parameters.
+// parseDSN parses a DSN string in the format "/path/to/db?password=secretpass"
+// and extracts the database path and password.
 func parseDSN(dsn string) (*DSN, error) {
 	if dsn == "" {
 		return nil, fmt.Errorf("dsn cannot be empty")
 	}
 
-	// Split the DSN into the path and the query string.
 	parts := strings.SplitN(dsn, "?", 2)
 	path := parts[0]
 	if path == "" {
 		return nil, fmt.Errorf("invalid DSN: missing database path")
 	}
 
-	// Initialize the DSN struct with the parsed path.
-	parsedDSN := &DSN{
-		Path: path,
-	}
-
-	// If there is a query part, parse it to extract parameters.
+	parsedDSN := &DSN{Path: path}
 	if len(parts) == 2 {
 		queryStr := parts[1]
 		values, err := url.ParseQuery(queryStr)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse query parameters: %w", err)
 		}
-		// Extract the "password" parameter.
 		parsedDSN.Password = values.Get("password")
 	}
 
 	return parsedDSN, nil
 }
 
+// Open opens a new database connection.
 func (d *Driver) Open(dsn string) (driver.Conn, error) {
 	parsed, err := parseDSN(dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	path := C.CString(parsed.Path)
-	password := C.CString(parsed.Password)
+	cPath := C.CString(parsed.Path)
+	cPassword := C.CString(parsed.Password)
 	passwordLen := C.int(len(parsed.Password))
+	defer C.free(unsafe.Pointer(cPath))
+	defer C.free(unsafe.Pointer(cPassword))
 
-	defer C.free(unsafe.Pointer(path))
-	defer C.free(unsafe.Pointer(password))
-
-	db := C.pdm_db_open(path, password, passwordLen)
+	db := C.pdm_db_open(cPath, cPassword, passwordLen)
 	if db == nil {
 		return nil, errors.New("failed to open database")
 	}
@@ -102,100 +103,181 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 	return &Conn{db: db}, nil
 }
 
-// Prepare Connection implementation
+// Prepare returns a new prepared statement.
 func (c *Conn) Prepare(query string) (driver.Stmt, error) {
 	return &Stmt{conn: c, sql: query}, nil
 }
 
+// Close closes the connection.
 func (c *Conn) Close() error {
 	if c.db != nil {
+		// Passing nil for the path here; adjust if needed.
 		C.pdm_db_close(c.db, nil)
 		c.db = nil
 	}
 	return nil
 }
 
+// Begin starts a transaction (not implemented).
 func (c *Conn) Begin() (driver.Tx, error) {
-	// Implement transaction logic
 	return nil, errors.New("transactions not implemented")
 }
 
-// Close Statement implementation
+// Close for Stmt is a no-op.
 func (s *Stmt) Close() error {
 	return nil
 }
 
+// NumInput returns -1 indicating that the number of placeholders is not fixed.
 func (s *Stmt) NumInput() int {
 	return -1
 }
 
-func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
-	query := C.CString(s.sql)
-	defer C.free(unsafe.Pointer(query))
-
-	result := C.pdm_db_execute(s.conn.db, query)
-	if result == 0 { // execution failed
-		return nil, errors.New("execution failed")
+// bindArgs binds the provided arguments to the prepared statement.
+func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
+	for i, arg := range args {
+		idx := C.int(i + 1)
+		var rc C.int
+		switch v := arg.(type) {
+		case nil:
+			rc = C.pdm_db_bind_null(stmt, idx)
+		case int:
+			rc = C.pdm_db_bind_int(stmt, idx, C.int(v))
+		case int64:
+			// Note: ideally use a 64-bit binding if available.
+			rc = C.pdm_db_bind_int(stmt, idx, C.int(v))
+		case float64:
+			rc = C.pdm_db_bind_double(stmt, idx, C.double(v))
+		case bool:
+			var intVal C.int
+			if v {
+				intVal = 1
+			} else {
+				intVal = 0
+			}
+			rc = C.pdm_db_bind_int(stmt, idx, intVal)
+		case string:
+			cs := C.CString(v)
+			rc = C.pdm_db_bind_text(stmt, idx, cs)
+			C.free(unsafe.Pointer(cs))
+		case []byte:
+			if len(v) > 0 {
+				rc = C.pdm_db_bind_blob(stmt, idx, unsafe.Pointer(&v[0]), C.int(len(v)))
+			} else {
+				rc = C.pdm_db_bind_blob(stmt, idx, nil, 0)
+			}
+		default:
+			return fmt.Errorf("unsupported argument type: %T", v)
+		}
+		if SQLiteResultCode(rc) != SQLITE_OK {
+			return fmt.Errorf("failed to bind parameter at index %d, code %d", int(idx), int(rc))
+		}
 	}
+	return nil
+}
 
-	// If you want to return rows affected, you could query that here.
+// Exec prepares, binds, steps, and finalizes the statement for non-query commands.
+func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
+	cQuery := C.CString(s.sql)
+	defer C.free(unsafe.Pointer(cQuery))
+	stmt := C.pdm_db_prepare(s.conn.db, cQuery)
+	if stmt == nil {
+		return nil, errors.New("failed to prepare statement")
+	}
+	if err := bindArgs(stmt, args); err != nil {
+		C.pdm_db_finalize(stmt)
+		return nil, err
+	}
+	rc := C.pdm_db_step(stmt)
+	if SQLiteResultCode(rc) != SQLITE_DONE {
+		C.pdm_db_finalize(stmt)
+		return nil, fmt.Errorf("execution failed with code %d", int(rc))
+	}
+	C.pdm_db_finalize(stmt)
+	// Returning 0 affected rows since our wrapper doesn’t provide that info.
 	return driver.RowsAffected(0), nil
 }
 
+// Query prepares, binds, and returns a Rows object for queries.
 func (s *Stmt) Query(args []driver.Value) (driver.Rows, error) {
-	query := C.CString(s.sql)
-	defer C.free(unsafe.Pointer(query))
-
-	log.Printf("Query: %s", s.sql)
-
-	if C.pdm_db_execute(s.conn.db, query) == 0 { // execution failed
-		return nil, errors.New("query execution failed")
+	cQuery := C.CString(s.sql)
+	defer C.free(unsafe.Pointer(cQuery))
+	stmt := C.pdm_db_prepare(s.conn.db, cQuery)
+	if stmt == nil {
+		return nil, errors.New("failed to prepare statement")
 	}
-
-	result := C.pdm_db_get_result(s.conn.db)
-	if result == nil {
-		return nil, errors.New("failed to get result")
+	if err := bindArgs(stmt, args); err != nil {
+		C.pdm_db_finalize(stmt)
+		return nil, err
 	}
-
+	cols := int(C.pdm_db_column_count(stmt))
+	log.Printf("Query: %s, with %d columns", s.sql, cols)
 	return &Rows{
-		stmt:   s,
-		result: result,
-		curr:   0,
+		stmt: stmt,
+		cols: cols,
+		done: false,
 	}, nil
 }
 
-// Columns Rows implementation
+// Columns returns the names of the columns.
 func (r *Rows) Columns() []string {
-	colCount := int(C.pdm_db_get_column_count(r.result))
-	columns := make([]string, colCount)
-
-	for i := 0; i < colCount; i++ {
-		cname := C.pdm_db_get_column_name(r.result, C.int(i))
+	columns := make([]string, r.cols)
+	for i := 0; i < r.cols; i++ {
+		cname := C.pdm_db_column_name(r.stmt, C.int(i))
 		columns[i] = C.GoString(cname)
 	}
-
 	return columns
 }
 
+// Close finalizes the prepared statement.
 func (r *Rows) Close() error {
-	if r.result != nil {
-		C.pdm_db_free_result(r.result)
-		r.result = nil
+	if r.stmt != nil {
+		C.pdm_db_finalize(r.stmt)
+		r.stmt = nil
 	}
 	return nil
 }
 
+// Next advances to the next row in the result set.
+// It uses SQLite’s column type functions to return appropriate Go types.
 func (r *Rows) Next(dest []driver.Value) error {
-	if r.curr >= int(C.pdm_db_get_row_count(r.result)) {
+	if r.done {
 		return io.EOF
 	}
-
-	colCount := int(C.pdm_db_get_column_count(r.result))
-	for i := 0; i < colCount; i++ {
-		cvalue := C.pdm_db_get_cell_data(r.result, C.int(r.curr), C.int(i))
-		dest[i] = C.GoString(cvalue)
+	rc := C.pdm_db_step(r.stmt)
+	switch SQLiteResultCode(rc) {
+	case SQLITE_ROW:
+		for i := 0; i < r.cols; i++ {
+			colType := C.pdm_db_column_type(r.stmt, C.int(i))
+			var val driver.Value
+			switch SQLiteDataType(colType) {
+			case SQLITE_INTEGER:
+				val = int64(C.pdm_db_column_int64(r.stmt, C.int(i)))
+			case SQLITE_FLOAT:
+				val = float64(C.pdm_db_column_double(r.stmt, C.int(i)))
+			case SQLITE_TEXT:
+				text := C.pdm_db_column_text(r.stmt, C.int(i))
+				if text != nil {
+					val = C.GoString((*C.char)(text))
+				} else {
+					val = ""
+				}
+			case SQLITE_BLOB:
+				size := int(C.pdm_db_column_bytes(r.stmt, C.int(i)))
+				blob := C.GoBytes(unsafe.Pointer(C.pdm_db_column_blob(r.stmt, C.int(i))), C.int(size))
+				val = blob
+			case SQLITE_NULL:
+				val = nil
+			default:
+				val = nil
+			}
+			dest[i] = val
+		}
+		return nil
+	case SQLITE_DONE:
+		r.done = true
+		return io.EOF
+	default:
+		return fmt.Errorf("error stepping through results: %d", int(rc))
 	}
-
-	r.curr++
-	return nil
 }
