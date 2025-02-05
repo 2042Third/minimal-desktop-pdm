@@ -34,6 +34,9 @@ func main() {
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
 			application.NewService(&services.NativeModules{}),
+			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"), application.ServiceOptions{
+				Name: "Database",
+			}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -74,26 +77,10 @@ func main() {
 		}
 	}()
 
-	appState := services.NewAppState(app)
+	appState := services.NewAppState(app, mainWindow)
 	if err := appState.Init(); err != nil {
 		log.Fatalf("Error initializing app state: %s", err.Error())
 	}
-
-	contextMenu := app.NewMenu()
-	contextMenu.Add("Click Me").OnClick(func(data *application.Context) {
-		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
-	})
-
-	globalContextMenu := app.NewMenu()
-	globalContextMenu.Add("Default context menu item").OnClick(func(data *application.Context) {
-		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
-	})
-
-	// Registering the menu with a window will make it available to that window only
-	mainWindow.RegisterContextMenu("test", contextMenu)
-
-	// Registering the menu with the app will make it available to all windows
-	app.RegisterContextMenu("test", globalContextMenu)
 
 	// Run the application. This blocks until the application has been exited.
 	err := app.Run()

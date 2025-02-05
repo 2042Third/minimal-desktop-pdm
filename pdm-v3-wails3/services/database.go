@@ -11,19 +11,31 @@ import (
 type Database struct {
 	sqlDB *sql.DB
 	db    *gorm.DB
+	name  string
 }
 
 func NewDatabase() *Database {
 	return &Database{}
 }
+func NewDatabaseWithOptions(path, passwd string) *Database {
+	db := &Database{}
+	db.Open(path, passwd)
+	return db
+}
 
 func (d *Database) Open(path, passwd string) {
+
+	if d.sqlDB != nil {
+		panic("Database already open")
+	}
+
 	// Create the SQL DB instance with your custom driver
 	sqlDB, err := sql.Open("pdmsqlite", path+"?password="+passwd)
 	if err != nil {
 		panic(err)
 	}
 	d.sqlDB = sqlDB
+	d.name = path
 
 	// Create a new GORM DB instance
 	db, err := gorm.Open(&pdmsqlite.Dialector{
@@ -47,8 +59,78 @@ func (d *Database) Close() {
 	}
 }
 
+func (d *Database) GetName() string {
+	return d.name
+}
+
 func (d *Database) GetDB() *gorm.DB {
 	return d.db
+}
+
+func (d *Database) GetGorm() *gorm.DB {
+	return d.db
+}
+
+func (d *Database) GetSQL() *sql.DB {
+	return d.sqlDB
+}
+
+func (d *Database) GetSQLite() *sql.DB {
+	return d.sqlDB
+}
+
+func (d *Database) ExecuteQuery(query string) models.QueryResult {
+	// Execute the query
+	rows, err := d.sqlDB.Query(query)
+	if err != nil {
+		return models.QueryResult{Error: err.Error()}
+	}
+	defer rows.Close()
+
+	// Get column names
+	columns, err := rows.Columns()
+	if err != nil {
+		return models.QueryResult{Error: err.Error()}
+	}
+
+	// Prepare result storage
+	result := models.QueryResult{
+		Columns: columns,
+		Rows:    make([][]interface{}, 0),
+	}
+
+	// Prepare containers for row values
+	values := make([]interface{}, len(columns))
+	scanArgs := make([]interface{}, len(columns))
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	// Fetch rows
+	for rows.Next() {
+		err := rows.Scan(scanArgs...)
+		if err != nil {
+			return models.QueryResult{Error: err.Error()}
+		}
+
+		// Convert row to proper format
+		row := make([]interface{}, len(columns))
+		for i, v := range values {
+			if v == nil {
+				row[i] = nil
+			} else {
+				switch v.(type) {
+				case []byte:
+					row[i] = string(v.([]byte))
+				default:
+					row[i] = v
+				}
+			}
+		}
+		result.Rows = append(result.Rows, row)
+	}
+
+	return result
 }
 
 func (d *Database) RunSmallTest() {

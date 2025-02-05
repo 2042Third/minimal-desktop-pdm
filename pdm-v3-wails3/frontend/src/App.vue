@@ -12,6 +12,7 @@ Events.On('time', () => {}); // Dummy event to keep the runtime alive
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/wails-tests">Wails 3</RouterLink>
+        <RouterLink to="/database">Database</RouterLink>
       </nav>
     </header>
 

@@ -2,54 +2,38 @@ package services
 
 import (
 	"github.com/wailsapp/wails/v3/pkg/application"
-	"log"
-	"runtime"
 )
 
 type AppState struct {
-	app *application.App
+	app        *application.App
+	mainWindow *application.WebviewWindow
 }
 
-func NewAppState(app *application.App) *AppState {
+func NewAppState(app *application.App, mainWindow *application.WebviewWindow) *AppState {
 	return &AppState{
-		app: app,
+		app:        app,
+		mainWindow: mainWindow,
 	}
 }
 
 func (a *AppState) Init() error {
 	app := a.app
-	//contextMenu := application.Contex NewContextMenu("menu-id")
-	menu := app.NewMenu()
 
-	// Add platform-specific application menu
-	if runtime.GOOS == "darwin" {
-		menu.AddRole(application.AppMenu)
-	}
-
-	// Add standard menus
-	menu.AddRole(application.EditMenu)
-	menu.AddRole(application.ViewMenu)
-	menu.AddRole(application.WindowMenu)
-	menu.AddRole(application.HelpMenu)
-
-	// Add custom menu
-	toolsMenu := menu.AddSubmenu("Tools")
-
-	// Add checkbox item
-	toolsMenu.AddCheckbox("Dark Mode", false).OnClick(func(ctx *application.Context) {
-		isDark := ctx.ClickedMenuItem().Checked()
-		log.Printf("Dark Mode: %v", isDark)
+	contextMenu := app.NewMenu()
+	contextMenu.Add("Click Me").OnClick(func(data *application.Context) {
+		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
 	})
 
-	// Add submenu
-	advancedMenu := toolsMenu.AddSubmenu("Advanced")
-	advancedMenu.Add("Configure...").OnClick(func(ctx *application.Context) {
-		log.Printf("Configuration Called from Menu")
-		// Show configuration
+	globalContextMenu := app.NewMenu()
+	globalContextMenu.Add("Default context menu item").OnClick(func(data *application.Context) {
+		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
 	})
 
-	// Set the menu
-	app.SetMenu(menu)
-	log.Printf("Menu Init Complete")
+	// Registering the menu with a window will make it available to that window only
+	a.mainWindow.RegisterContextMenu("test", contextMenu)
+
+	// Registering the menu with the app will make it available to all windows
+	app.RegisterContextMenu("test", globalContextMenu)
+
 	return nil
 }

@@ -15,3 +15,9 @@ type Post struct {
 	UserID  uint
 	User    User
 }
+
+type QueryResult struct {
+	Columns []string        `json:"columns"`
+	Rows    [][]interface{} `json:"rows"`
+	Error   string          `json:"error"`
+}
