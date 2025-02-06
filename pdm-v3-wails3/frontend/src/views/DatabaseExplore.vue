@@ -1,6 +1,6 @@
 
 <script setup>
-import {onMounted, watch} from 'vue'
+import {onMounted, ref, watch} from 'vue'
 import { Database } from '../../bindings/pdm/services/index.js'
 import {useDatabaseStore} from "@/stores/databaseExplore.js";
 import {storeToRefs} from "pinia";
@@ -58,6 +58,49 @@ onMounted(() => {
   loadTables()
   loadSQLiteName()
 })
+
+/////////////////////////////// Floating window
+// Add these variables for cell editing
+const editingCell = ref(null)
+const editValue = ref('')
+const inputPosition = ref({ top: 0, left: 0 })
+
+// Function to start editing
+const startEditing = (event, row, column, value) => {
+  const cell = event.target
+  const rect = cell.getBoundingClientRect()
+
+  editValue.value = value
+  inputPosition.value = {
+    top: `${rect.top}px`,
+    left: `${rect.left}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`
+  }
+  editingCell.value = { row, column }
+}
+
+// Function to stop editing
+const stopEditing = () => {
+  editingCell.value = null
+}
+
+// Function to save changes
+const saveEdit = async () => {
+  if (!editingCell.value) return
+
+  // Here you would typically update the database
+  // For now, we'll just update the local results
+  const rowIndex = editingCell.value.row
+  const colIndex = editingCell.value.column
+
+  if (results.value && results.value.rows[rowIndex]) {
+    results.value.rows[rowIndex][colIndex] = editValue.value
+  }
+
+  stopEditing()
+}
+
 </script>
 
 <template>
@@ -114,9 +157,13 @@ onMounted(() => {
               </thead>
               <tbody>
               <tr v-for="(row, index) in results.rows" :key="index">
-                <td v-for="(cell, cellIndex) in row" :key="cellIndex"
-                    :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ table:query.table , rowid: row[0], column: results.columns[cellIndex] })}`">
+                <td v-for="(cell, cellIndex) in row"
+                    :key="cellIndex"
+                    :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ table:query.table , rowid: row[0], column: results.columns[cellIndex] })}`"
+                    @dblclick="startEditing($event, index, cellIndex, cell)"
+                >
                   {{ cell }}
+
                 </td>
               </tr>
               </tbody>
@@ -125,11 +172,37 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <!-- Floating Edit Input -->
+    <input
+      v-if="editingCell"
+      v-model="editValue"
+      class="floating-input"
+      :style="inputPosition"
+      @blur="saveEdit"
+      @keyup.enter="saveEdit"
+      @keyup.esc="stopEditing"
+      ref="editInput"
+    />
   </div>
 </template>
 
 
 <style scoped>
+.floating-input {
+  position: fixed;
+  margin: 0;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 2px solid #3498db;
+  background: var(--color-background);
+  color: var(--color-text);
+  z-index: 1000;
+}
+
+.floating-input:focus {
+  outline: none;
+}
+
 .query-runner {
   height: 100vh;
   padding: 20px;

@@ -9,8 +9,6 @@ Events.On('time', () => {}); // Dummy event to keep the runtime alive
     <header >
       <h1>PDM Notes</h1>
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
         <RouterLink to="/wails-tests">Wails 3</RouterLink>
         <RouterLink to="/database">Database</RouterLink>
       </nav>
