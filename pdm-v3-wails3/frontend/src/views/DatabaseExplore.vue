@@ -11,6 +11,7 @@
             @keydown.ctrl.enter="executeQuery"
           ></textarea>
           <button @click="executeQuery">Execute Query</button>
+          <button @click="loadTables">Refresh</button>
         </div>
         <div>
           <h3>Database Name</h3>
@@ -51,7 +52,8 @@
               </thead>
               <tbody>
               <tr v-for="(row, index) in results.rows" :key="index">
-                <td v-for="(cell, cellIndex) in row" :key="cellIndex">
+                <td v-for="(cell, cellIndex) in row" :key="cellIndex"
+                    :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ rowid: row[0], column: results.columns[cellIndex] })}`">
                   {{ cell }}
                 </td>
               </tr>
@@ -73,9 +75,13 @@ const results = ref(null)
 const tables = ref([])
 const dbFile = ref('')
 
+// Strip the query string and removes new lines
+const cleanQuery = (query) => query.trim().replace(/\n/g, ' ')
+
+
 const executeQuery = async () => {
   try {
-    results.value = await Database.ExecuteQuery(query.value)
+    results.value = await Database.ExecuteQuery(cleanQuery(query.value))
   } catch (error) {
     results.value = { error: error.message }
   }
@@ -96,7 +102,7 @@ const loadTables = async () => {
 }
 
 const selectTable = (tableName) => {
-  query.value = `SELECT * FROM ${tableName} LIMIT 100;`
+  query.value = `SELECT rowid, * FROM ${tableName} LIMIT 100;`
   executeQuery()
 }
 

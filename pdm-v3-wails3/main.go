@@ -58,7 +58,7 @@ func main() {
 		MinWidth:  700,
 		MinHeight: 500,
 		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 50,
+			InvisibleTitleBarHeight: 20,
 			Backdrop:                application.MacBackdropTranslucent,
 			TitleBar:                application.MacTitleBarHiddenInset,
 			Appearance:              "NSAppearanceNameDarkAqua",

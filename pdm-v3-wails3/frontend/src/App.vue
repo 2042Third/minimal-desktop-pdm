@@ -6,7 +6,7 @@ Events.On('time', () => {}); // Dummy event to keep the runtime alive
 </script>
 <template>
   <div class="app-layout">
-    <header>
+    <header >
       <h1>PDM Notes</h1>
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -41,6 +41,12 @@ header {
   padding-top: 8rem;
   border-right: 1px solid var(--color-border);
   background-color: var(--color-background-trans);
+  --wails-draggable: drag;
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
 }
 
 .content {
