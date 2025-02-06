@@ -1,8 +1,6 @@
 package services
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
@@ -18,7 +16,7 @@ func NewAppState(app *application.App, mainWindow *application.WebviewWindow) *A
 	}
 }
 
-func (a *AppState) Init() error {
+func (a *AppState) Init(CellClicked func(data *application.Context)) error {
 	app := a.app
 
 	contextMenu := app.NewMenu()
@@ -39,43 +37,8 @@ func (a *AppState) Init() error {
 
 	// Make database table context menu
 	dbTableContextMenu := app.NewMenu()
-	dbTableContextMenu.Add("Edit Cell").OnClick(func(data *application.Context) {
-		app.Logger.Info("Edit Cell Context menu raw", "data ", data.ContextMenuData())
-		cellInfoJSONString, err := convertToString(data.ContextMenuData())
-		if err != nil {
-			app.Logger.Error("Failed to convert context menu data to string", "error", err)
-			return
-		}
-		parsed, err := parseCellInfo(cellInfoJSONString)
-		if err != nil {
-			app.Logger.Error("Failed to parse cell info", "error", err)
-			return
-		}
-		app.Logger.Info("Edit Cell Context menu", "rowid", parsed.RowID, "column", parsed.ColumnName)
-	})
+	dbTableContextMenu.Add("Edit Cell").OnClick(CellClicked)
 	a.mainWindow.RegisterContextMenu("dbTableMenu", dbTableContextMenu)
 
 	return nil
-}
-
-type CellInfo struct {
-	RowID      int    `json:"rowid"`
-	ColumnName string `json:"column"`
-}
-
-func convertToString(value interface{}) (string, error) {
-	str, ok := value.(string)
-	if !ok {
-		return "", fmt.Errorf("value is not a string")
-	}
-	return str, nil
-}
-
-func parseCellInfo(cellInfoJSON string) (*CellInfo, error) {
-	var cellInfo CellInfo
-	err := json.Unmarshal([]byte(cellInfoJSON), &cellInfo)
-	if err != nil {
-		return nil, err
-	}
-	return &cellInfo, nil
 }

@@ -1,3 +1,65 @@
+
+<script setup>
+import {onMounted, watch} from 'vue'
+import { Database } from '../../bindings/pdm/services/index.js'
+import {useDatabaseStore} from "@/stores/databaseExplore.js";
+import {storeToRefs} from "pinia";
+
+const store = useDatabaseStore()
+// Destructure after creating store instance
+
+// Use storeToRefs for reactive properties
+const { query, results, tables, dbFile } = storeToRefs(store)
+// Keep actions as regular destructuring
+const { setResults, setTables, setDbFile, setQuery } = store
+
+// Add watchers to debug
+watch(() => store.results, (newVal) => {
+  console.log('Store results changed:', newVal)
+}, { deep: true })
+
+watch(() => store.tables, (newVal) => {
+  console.log('Store tables changed:', newVal)
+}, { deep: true })
+
+// Strip the query string and removes new lines
+const cleanQuery = (sql) => sql.trim().replace(/\n/g, ' ')
+
+
+const executeQuery = async () => {
+  try {
+    setResults(await Database.ExecuteQuery(cleanQuery(query.value.sql)))
+  } catch (error) {
+    setResults({ error: error.message })
+  }
+}
+
+const loadSQLiteName = async () => {
+  setDbFile(await Database.GetName());
+
+}
+
+const loadTables = async () => {
+  try {
+    const result = await Database.ExecuteQuery("SELECT name FROM sqlite_master WHERE type='table';")
+    console.log(result)
+    setTables(result.rows.map(row => row[0]))
+  } catch (error) {
+    console.error('Failed to load tables:', error)
+  }
+}
+
+const selectTable = (tableName) => {
+  setQuery({table: tableName, sql: `SELECT rowid, * FROM ${tableName} LIMIT 100;`})
+  executeQuery()
+}
+
+onMounted(() => {
+  loadTables()
+  loadSQLiteName()
+})
+</script>
+
 <template>
   <div class="query-runner">
     <div class="container">
@@ -6,7 +68,7 @@
         <!-- Query Input -->
         <div class="query-input">
           <textarea
-            v-model="query"
+            v-model="query.sql"
             placeholder="Enter your SQL query..."
             @keydown.ctrl.enter="executeQuery"
           ></textarea>
@@ -53,7 +115,7 @@
               <tbody>
               <tr v-for="(row, index) in results.rows" :key="index">
                 <td v-for="(cell, cellIndex) in row" :key="cellIndex"
-                    :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ rowid: row[0], column: results.columns[cellIndex] })}`">
+                    :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ table:query.table , rowid: row[0], column: results.columns[cellIndex] })}`">
                   {{ cell }}
                 </td>
               </tr>
@@ -66,51 +128,6 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { Database } from '../../bindings/pdm/services/index.js'
-
-const query = ref('')
-const results = ref(null)
-const tables = ref([])
-const dbFile = ref('')
-
-// Strip the query string and removes new lines
-const cleanQuery = (query) => query.trim().replace(/\n/g, ' ')
-
-
-const executeQuery = async () => {
-  try {
-    results.value = await Database.ExecuteQuery(cleanQuery(query.value))
-  } catch (error) {
-    results.value = { error: error.message }
-  }
-}
-
-const loadSQLiteName = async () => {
-  dbFile.value = await Database.GetName();
-
-}
-
-const loadTables = async () => {
-  try {
-    const result = await Database.ExecuteQuery("SELECT name FROM sqlite_master WHERE type='table';")
-    tables.value = result.rows.map(row => row[0])
-  } catch (error) {
-    console.error('Failed to load tables:', error)
-  }
-}
-
-const selectTable = (tableName) => {
-  query.value = `SELECT rowid, * FROM ${tableName} LIMIT 100;`
-  executeQuery()
-}
-
-onMounted(() => {
-  loadTables()
-  loadSQLiteName()
-})
-</script>
 
 <style scoped>
 .query-runner {

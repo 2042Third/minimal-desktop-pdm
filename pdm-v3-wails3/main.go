@@ -33,7 +33,9 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
-			application.NewService(&services.NativeModules{}),
+			application.NewService(&services.NativeModules{
+				CellClicked: func(data *application.Context) {},
+			}),
 			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"), application.ServiceOptions{
 				Name: "Database",
 			}),
@@ -78,7 +80,16 @@ func main() {
 	}()
 
 	appState := services.NewAppState(app, mainWindow)
-	if err := appState.Init(); err != nil {
+	if err := appState.Init(func(data *application.Context) {
+
+		parsed, err := services.CellClickCallBack(data)
+		if err != nil {
+			app.Logger.Error("Error parsing cell info", "error", err.Error())
+			return
+		}
+		app.Logger.Info("Edit Cell Context menu", "cellInfo", parsed)
+
+	}); err != nil {
 		log.Fatalf("Error initializing app state: %s", err.Error())
 	}
 

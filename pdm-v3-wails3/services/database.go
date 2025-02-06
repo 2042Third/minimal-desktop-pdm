@@ -2,7 +2,9 @@ package services
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/wailsapp/wails/v3/pkg/application"
 	"gorm.io/gorm"
 	"pdm/models"
 	"pdm/pdmsqlite"
@@ -21,6 +23,31 @@ func NewDatabaseWithOptions(path, passwd string) *Database {
 	db := &Database{}
 	db.Open(path, passwd)
 	return db
+}
+
+func CellClickCallBack(data *application.Context) (*models.CellInfo, error) {
+	cellInfoJSONString, err := convertToString(data.ContextMenuData())
+	if err != nil {
+		return nil, err
+	}
+	return parseCellInfo(cellInfoJSONString)
+}
+
+func convertToString(value interface{}) (string, error) {
+	str, ok := value.(string)
+	if !ok {
+		return "", fmt.Errorf("value is not a string")
+	}
+	return str, nil
+}
+
+func parseCellInfo(cellInfoJSON string) (*models.CellInfo, error) {
+	var cellInfo models.CellInfo
+	err := json.Unmarshal([]byte(cellInfoJSON), &cellInfo)
+	if err != nil {
+		return nil, err
+	}
+	return &cellInfo, nil
 }
 
 func (d *Database) Open(path, passwd string) {
