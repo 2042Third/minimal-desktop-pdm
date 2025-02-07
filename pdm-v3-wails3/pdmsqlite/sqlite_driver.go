@@ -16,6 +16,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/url"
 	"strings"
 	"time"
@@ -109,6 +110,7 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 
 // Prepare returns a new prepared statement.
 func (c *Conn) Prepare(query string) (driver.Stmt, error) {
+	log.Printf("Preparing statement: %s", query)
 	return &Stmt{conn: c, sql: query}, nil
 }
 
@@ -206,24 +208,36 @@ func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
 
 // Exec prepares, binds, steps, and finalizes the statement for non-query commands.
 func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
+	log.Printf("Executing statement: %s", s.sql)
 	cQuery := C.CString(s.sql)
 	defer C.free(unsafe.Pointer(cQuery))
+
 	stmt := C.pdm_db_prepare(s.conn.db, cQuery)
 	if stmt == nil {
 		return nil, errors.New("failed to prepare statement")
 	}
+	defer C.pdm_db_finalize(stmt)
+
 	if err := bindArgs(stmt, args); err != nil {
-		C.pdm_db_finalize(stmt)
 		return nil, err
 	}
+
 	rc := C.pdm_db_step(stmt)
-	if SQLiteResultCode(rc) != SQLITE_DONE {
-		C.pdm_db_finalize(stmt)
-		return nil, fmt.Errorf("execution failed with code %d", int(rc))
+
+	// Check for errors first
+	if SQLiteResultCode(rc) == SQLITE_ERROR {
+		return nil, fmt.Errorf("execution failed with code %d: %v", int(rc), SQLiteResultCode(rc).String())
 	}
-	C.pdm_db_finalize(stmt)
-	// Returning 0 affected rows since our wrapper doesn’t provide that info.
-	return driver.RowsAffected(0), nil
+
+	// SQLITE_DONE means success
+	if SQLiteResultCode(rc) == SQLITE_DONE {
+		// Get the number of rows affected
+		rowsAffected := C.pdm_db_last_insert_rowid(s.conn.db)
+		return driver.RowsAffected(rowsAffected), nil
+	}
+
+	// Any other result code is unexpected
+	return nil, fmt.Errorf("unexpected result code: %d: %v", int(rc), SQLiteResultCode(rc).String())
 }
 
 // Query prepares, binds, and returns a Rows object for queries.

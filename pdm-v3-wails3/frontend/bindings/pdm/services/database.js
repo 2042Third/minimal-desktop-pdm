@@ -26,6 +26,15 @@ export function Close() {
 
 /**
  * @param {string} query
+ * @returns {Promise<void> & { cancel(): void }}
+ */
+export function Execute(query) {
+    let $resultPromise = /** @type {any} */($Call.ByID(913414865, query));
+    return $resultPromise;
+}
+
+/**
+ * @param {string} query
  * @returns {Promise<models$0.QueryResult> & { cancel(): void }}
  */
 export function ExecuteQuery(query) {

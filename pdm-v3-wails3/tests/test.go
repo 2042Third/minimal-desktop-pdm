@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	//basicSqliteStr()
+	basicSqliteStr()
 	//basicSqlite()
 
 	db := services.NewDatabase()
@@ -61,7 +61,7 @@ func basicSqliteStr() {
 	}
 
 	// Example Exec: insert a row
-	_, err = db.Exec("INSERT INTO test (value) VALUES ('hello3')")
+	_, err = db.Exec("INSERT INTO test (value) VALUES (?)	", "hello3")
 	if err != nil {
 		panic(err)
 	}

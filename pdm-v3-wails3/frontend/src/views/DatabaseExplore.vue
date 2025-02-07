@@ -1,6 +1,6 @@
 
 <script setup>
-import {onMounted, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, ref, watch} from 'vue'
 import { Database } from '../../bindings/pdm/services/index.js'
 import {useDatabaseStore} from "@/stores/databaseExplore.js";
 import {storeToRefs} from "pinia";
@@ -34,6 +34,15 @@ const executeQuery = async () => {
   }
 }
 
+const executeStatement = async () => {
+  try {
+    const output = await Database.Execute(cleanQuery(query.value.sql));
+    console.log(output)
+  } catch (error) {
+    setResults({ error: "Error occurred" })
+  }
+}
+
 const loadSQLiteName = async () => {
   setDbFile(await Database.GetName());
 
@@ -60,45 +69,105 @@ onMounted(() => {
 })
 
 /////////////////////////////// Floating window
+const tesseract = ref({
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0
+});
+
 // Add these variables for cell editing
 const editingCell = ref(null)
 const editValue = ref('')
 const inputPosition = ref({ top: 0, left: 0 })
 
-// Function to start editing
+const tableContainer = ref(null)
+const scrollHandler = ref(null)
+
+const getEditorStyle = computed(() => {
+  if (!editingCell.value) return {};
+  return {
+    position: 'absolute',
+    top: `${editingCell.value.top}px`,
+    left: `${editingCell.value.left}px`,
+    width: `${editingCell.value.width}px`,
+    height: `${editingCell.value.height}px`
+  };
+});
+
+
 const startEditing = (event, row, column, value) => {
-  const cell = event.target
-  const rect = cell.getBoundingClientRect()
+  const cell = event.target;
+  const rect = cell.getBoundingClientRect();
+  const tableRect = tableContainer.value.getBoundingClientRect();
 
-  editValue.value = value
-  inputPosition.value = {
-    top: `${rect.top}px`,
-    left: `${rect.left}px`,
-    width: `${rect.width}px`,
-    height: `${rect.height}px`
-  }
-  editingCell.value = { row, column }
-}
+  editValue.value = value;
+  editingCell.value = {
+    row,
+    column,
+    width: rect.width,
+    height: rect.height,
+    top: rect.top - tableRect.top,
+    left: rect.left - tableRect.left
+  };
 
-// Function to stop editing
+  nextTick(() => {
+    const editor = document.querySelector('.cell-editor');
+    if (editor) {
+      editor.focus();
+      editor.style.width = `${rect.width}px`;
+      editor.style.height = `${rect.height}px`;
+    }
+  });
+};
+
+
+// Update the stopEditing function to remove the scroll listener
 const stopEditing = () => {
+  if (tableContainer.value && scrollHandler.value) {
+    tableContainer.value.removeEventListener('scroll', scrollHandler.value)
+    scrollHandler.value = null
+  }
   editingCell.value = null
 }
+
+// Add onBlur handler
+const handleBlur = (event) => {
+  // Check if the related target is not within the editing context
+  if (!event.relatedTarget || !event.relatedTarget.closest('.floating-input')) {
+    saveEdit()
+  }
+}
+
 
 // Function to save changes
 const saveEdit = async () => {
   if (!editingCell.value) return
 
-  // Here you would typically update the database
-  // For now, we'll just update the local results
-  const rowIndex = editingCell.value.row
-  const colIndex = editingCell.value.column
-
-  if (results.value && results.value.rows[rowIndex]) {
-    results.value.rows[rowIndex][colIndex] = editValue.value
+  try {
+    const rowIndex = editingCell.value.row
+    const colIndex = editingCell.value.column
+    const rowId = results.value.rows[rowIndex][0] // Assuming first column is rowid
+    const columnName = results.value.columns[colIndex]
+    alert(`UPDATE ${query.value.table} SET ${columnName} = ${editValue.value} WHERE rowid = ${rowId}`)
+    // // Update database
+    // await Database.ExecuteQuery(
+    //   `UPDATE ${query.value.table}
+    //    SET ${columnName} = ?
+    //    WHERE rowid = ?`,
+    //   [editValue.value, rowId]
+    // )
+    //
+    // // Update local results
+    // if (results.value && results.value.rows[rowIndex]) {
+    //   results.value.rows[rowIndex][colIndex] = editValue.value
+    // }
+  } catch (error) {
+    console.error('Failed to update:', error)
+    // Handle error (maybe show a notification)
+  } finally {
+    stopEditing()
   }
-
-  stopEditing()
 }
 
 </script>
@@ -116,6 +185,7 @@ const saveEdit = async () => {
             @keydown.ctrl.enter="executeQuery"
           ></textarea>
           <button @click="executeQuery">Execute Query</button>
+          <button @click="executeStatement">Execute Statement</button>
           <button @click="loadTables">Refresh</button>
         </div>
         <div>
@@ -146,7 +216,7 @@ const saveEdit = async () => {
           </div>
 
           <!-- Results Table -->
-          <div class="table-container" v-else>
+          <div class="table-container" ref="tableContainer" v-else>
             <table>
               <thead>
               <tr>
@@ -159,6 +229,8 @@ const saveEdit = async () => {
               <tr v-for="(row, index) in results.rows" :key="index">
                 <td v-for="(cell, cellIndex) in row"
                     :key="cellIndex"
+                    :data-row="index"
+                    :data-col="cellIndex"
                     :style="`--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${JSON.stringify({ table:query.table , rowid: row[0], column: results.columns[cellIndex] })}`"
                     @dblclick="startEditing($event, index, cellIndex, cell)"
                 >
@@ -168,28 +240,33 @@ const saveEdit = async () => {
               </tr>
               </tbody>
             </table>
+            <textarea
+              v-show="editingCell"
+              v-model="editValue"
+              class="cell-editor"
+              :style="getEditorStyle"
+              @blur="saveEdit"
+              @keyup.enter="saveEdit"
+              @keyup.esc="stopEditing"
+            />
           </div>
         </div>
       </div>
     </div>
-    <!-- Floating Edit Input -->
-    <input
-      v-if="editingCell"
-      v-model="editValue"
-      class="floating-input"
-      :style="inputPosition"
-      @blur="saveEdit"
-      @keyup.enter="saveEdit"
-      @keyup.esc="stopEditing"
-      ref="editInput"
-    />
+
   </div>
 </template>
 
 
 <style scoped>
-.floating-input {
-  position: fixed;
+
+td {
+  height: var(--cell-height, 40px);
+  width: var(--cell-width, 100px);
+}
+
+.cell-editor {
+  position: absolute;
   margin: 0;
   padding: 8px;
   box-sizing: border-box;
@@ -197,11 +274,12 @@ const saveEdit = async () => {
   background: var(--color-background);
   color: var(--color-text);
   z-index: 1000;
+  resize: none;
+  font-family: inherit;
+  font-size: inherit;
 }
 
-.floating-input:focus {
-  outline: none;
-}
+
 
 .query-runner {
   height: 100vh;
@@ -286,6 +364,7 @@ const saveEdit = async () => {
 }
 
 .table-container {
+  position: relative;
   height: 100%;
   overflow: auto;
 }
