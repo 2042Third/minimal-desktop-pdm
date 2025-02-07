@@ -65,6 +65,9 @@ func main() {
 			TitleBar:                application.MacTitleBarHiddenInset,
 			Appearance:              "NSAppearanceNameDarkAqua",
 		},
+		Windows: application.WindowsWindow{
+			BackdropType: 3,
+		},
 		BackgroundColour: application.NewRGB(27, 38, 54),
 		URL:              "/",
 	})
