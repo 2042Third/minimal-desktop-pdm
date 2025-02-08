@@ -547,7 +547,7 @@ const options = {
   root,
   service_worker: false,
   templates: {
-    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\r\n<html lang="en">\r\n<head>\r\n    <link rel="stylesheet" href="' + assets2 + '/app.css">\r\n    <link rel="stylesheet" href="' + assets2 + '/main.css">\r\n    <link rel="stylesheet" href="' + assets2 + '/base.css">\r\n    <meta charset="utf-8" />\r\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\r\n    ' + head + '\r\n</head>\r\n<body data-sveltekit-preload-data="hover">\r\n<div style="display: contents">' + body + "</div>\r\n</body>\r\n</html>",
+    app: ({ head, body, assets: assets2, nonce, env }) => '<!doctype html>\n<html lang="en">\n<head>\n    <link rel="stylesheet" href="' + assets2 + '/app.css">\n    <link rel="stylesheet" href="' + assets2 + '/main.css">\n    <link rel="stylesheet" href="' + assets2 + '/base.css">\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    ' + head + '\n</head>\n<body data-sveltekit-preload-data="hover">\n<div style="display: contents">' + body + "</div>\n</body>\n</html>",
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -619,7 +619,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "30kphu"
+  version_hash: "7yf2om"
 };
 async function get_hooks() {
   let handle;

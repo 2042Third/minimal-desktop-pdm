@@ -1,7 +1,7 @@
 package pdmsqlite
 
 /*
-#cgo LDFLAGS: -L${SRCDIR}/../Frameworks  -Wl,-rpath,${SRCDIR}/../Frameworks  -Wl,-rpath,${SRCDIR}/../pdm/lencrypted_sqlite/install/bin  -L${SRCDIR}/../pdm/encrypted-sqlite/build -L${SRCDIR}/../pdm/encrypted-sqlite/install/lib -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -L${SRCDIR}/../pdm/encrypted-sqlite -lwrapper -lencrypted_sqlite -lcryptosqlite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite -lstdc++
+#cgo LDFLAGS: -L${SRCDIR}/../Frameworks  -Wl,-rpath,${SRCDIR}/../Frameworks  -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/install/bin -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/install/lib  -L${SRCDIR}/../pdm/encrypted-sqlite/build -L${SRCDIR}/../pdm/encrypted-sqlite/install/lib -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite -L${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -L${SRCDIR}/../pdm/encrypted-sqlite -lwrapper -lencrypted_sqlite -lcryptosqlite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite/build/lib/cryptoSQLite -Wl,-rpath,${SRCDIR}/../pdm/encrypted-sqlite -lstdc++
 
 #cgo CXXFLAGS: -std=c++20
 #cgo CFLAGS: -I${SRCDIR}/../pdm/encrypted-sqlite -I${SRCDIR}/../pdm/encrypted-sqlite/install/include -I${SRCDIR}
