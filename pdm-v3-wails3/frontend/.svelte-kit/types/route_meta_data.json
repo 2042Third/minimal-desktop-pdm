@@ -1,0 +1,12 @@
+{
+	"/": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/database": [
+		"src/routes/+layout.js"
+	],
+	"/wails-tests": [
+		"src/routes/+layout.js"
+	]
+}

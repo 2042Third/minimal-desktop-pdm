@@ -70,7 +70,7 @@ func main() {
 			BackdropType: 0,
 			Theme:        2,
 		},
-		BackgroundColour: application.NewRGB(27, 38, 54),
+		BackgroundColour: application.NewRGB(255, 255, 255),
 		URL:              "/",
 	})
 
