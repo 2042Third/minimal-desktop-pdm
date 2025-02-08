@@ -2,7 +2,7 @@ import { t as template, a as append } from "../chunks/BGQeMav5.js";
 import "../chunks/DSlFIRKF.js";
 import { p as push, f as first_child, t as template_effect, a as pop, c as child, r as reset, s as sibling } from "../chunks/TdN3I5eQ.js";
 import { s as set_text } from "../chunks/Cv_58GG0.js";
-import { i as init, p as page } from "../chunks/BAqM8fDm.js";
+import { i as init, p as page } from "../chunks/BKaRVucg.js";
 var root = template(`<h1> </h1> <p> </p>`, 1);
 function Error($$anchor, $$props) {
   push($$props, false);

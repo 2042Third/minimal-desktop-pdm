@@ -3,9 +3,9 @@
 
 </script>
 
-<div class="app-layout">
-    <header>
-        <h1>PDM Notes</h1>
+<div class="app-layout no-select">
+    <header class="can-drag">
+        <h1 >PDM Notes</h1>
         <nav>
             <a
                     href="/wails-tests"
@@ -28,6 +28,38 @@
 </div>
 
 <style>
+
+    :global {
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .can-select {
+            -webkit-touch-callout: default!important;
+            -webkit-user-select: auto!important;
+            -moz-user-select: auto!important;
+            -ms-user-select: auto!important;
+            user-select: auto!important;
+        }
+        .can-select-text {
+            -webkit-touch-callout: default!important;
+            -webkit-user-select: text!important;
+            -moz-user-select: text!important;
+            -ms-user-select: text!important;
+            user-select: text!important;
+        }
+
+        .can-drag {
+            --wails-draggable: drag;
+        }
+
+        .no-drag {
+            --wails-draggable: no-drag;
+        }
+    }
     .app-layout {
         display: flex;
         min-width: 800px;
@@ -46,13 +78,10 @@
         padding-top: 8rem;
         border-right: 1px solid var(--color-border);
         background-color: var(--color-background-trans);
-        --wails-draggable: drag;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
+
+
     }
+
 
     .content {
         flex: 1;

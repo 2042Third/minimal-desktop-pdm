@@ -56,11 +56,7 @@ export class QueryResult {
     }
 }
 
-// @ts-ignore
 // Private type creation functions
-
 const $$createType0 = $Create.Array($Create.Any);
-// @ts-ignore
 const $$createType1 = $Create.Array($Create.Any);
-// @ts-ignore
 const $$createType2 = $Create.Array($$createType1);

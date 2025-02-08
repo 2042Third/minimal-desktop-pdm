@@ -13,13 +13,14 @@ function _page($$payload, $$props) {
   var $$store_subs;
   let editValue = "";
   const editorStyle = derived(editingCell, ($editingCell) => {
-    return $editingCell ? {
-      position: "absolute",
-      top: `${$editingCell.top}px`,
-      left: `${$editingCell.left}px`,
-      width: `${$editingCell.width}px`,
-      height: `${$editingCell.height}px`
-    } : {};
+    if (!$editingCell.editing) return "";
+    return `
+            position: absolute;
+            top: ${$editingCell.top}px;
+            left: ${$editingCell.left}px;
+            width: ${$editingCell.width}px;
+            height: ${$editingCell.height}px;
+        `;
   });
   const each_array = ensure_array_like(store_get($$store_subs ??= {}, "$tables", tables));
   $$payload.out += `<div class="query-runner svelte-1vlgswv"><div class="container svelte-1vlgswv"><div class="left-panel svelte-1vlgswv"><div class="query-input svelte-1vlgswv"><textarea placeholder="Enter your SQL query..." class="svelte-1vlgswv">`;
@@ -27,7 +28,7 @@ function _page($$payload, $$props) {
   if ($$body) {
     $$payload.out += `${$$body}`;
   }
-  $$payload.out += `</textarea> <button class="svelte-1vlgswv">Execute Query</button> <button class="svelte-1vlgswv">Execute Statement</button> <button class="svelte-1vlgswv">Refresh</button></div> <div><h3>Database Name</h3> <p>${escape_html(dbFile)}</p></div> <div class="tables-list svelte-1vlgswv"><h3 class="svelte-1vlgswv">Available Tables</h3> <ul class="svelte-1vlgswv"><!--[-->`;
+  $$payload.out += `</textarea> <button class="svelte-1vlgswv">Execute Query</button> <button class="svelte-1vlgswv">Execute Statement</button> <button class="svelte-1vlgswv">Refresh</button></div> <div><h3 class="no-select">Database Name</h3> <p class="can-select">${escape_html(store_get($$store_subs ??= {}, "$dbFile", dbFile))}</p></div> <div class="tables-list svelte-1vlgswv"><h3 class="svelte-1vlgswv">Available Tables</h3> <ul class="svelte-1vlgswv"><!--[-->`;
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
     let table = each_array[$$index];
     $$payload.out += `<li class="svelte-1vlgswv">${escape_html(table)}</li>`;
@@ -64,9 +65,9 @@ function _page($$payload, $$props) {
         $$payload.out += `<!--]--></tr>`;
       }
       $$payload.out += `<!--]--></tbody></table> `;
-      if (editingCell) {
+      if (store_get($$store_subs ??= {}, "$editingCell", editingCell).editing) {
         $$payload.out += "<!--[-->";
-        $$payload.out += `<textarea class="cell-editor svelte-1vlgswv"${attr("style", Object.entries(editorStyle).map(([k, v]) => `${k}:${v}`).join(";"))}>`;
+        $$payload.out += `<textarea class="cell-editor svelte-1vlgswv"${attr("style", store_get($$store_subs ??= {}, "$editorStyle", editorStyle))}>`;
         const $$body_1 = escape_html(editValue);
         if ($$body_1) {
           $$payload.out += `${$$body_1}`;

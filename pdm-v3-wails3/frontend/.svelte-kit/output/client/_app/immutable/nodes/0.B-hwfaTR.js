@@ -1,7 +1,7 @@
 import { t as template, a as append } from "../chunks/BGQeMav5.js";
 import "../chunks/DSlFIRKF.js";
 import { h as hydrating, d as hydrate_next, p as push, t as template_effect, a as pop, c as child, s as sibling, r as reset } from "../chunks/TdN3I5eQ.js";
-import { i as init, p as page } from "../chunks/BAqM8fDm.js";
+import { i as init, p as page } from "../chunks/BKaRVucg.js";
 function slot(anchor, $$props, name, slot_props, fallback_fn) {
   var _a;
   if (hydrating) {
@@ -34,7 +34,7 @@ const _layout$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePro
   prerender,
   ssr
 }, Symbol.toStringTag, { value: "Module" }));
-var root = template(`<div class="app-layout svelte-1a1k8xn"><header class="svelte-1a1k8xn"><h1 class="svelte-1a1k8xn">PDM Notes</h1> <nav class="svelte-1a1k8xn"><a href="/wails-tests" class="svelte-1a1k8xn">Wails 3</a> <a href="/database" class="svelte-1a1k8xn">Database</a></nav></header> <main class="content svelte-1a1k8xn"><!></main></div>`);
+var root = template(`<div class="app-layout no-select svelte-l6obgh"><header class="can-drag svelte-l6obgh"><h1 class="svelte-l6obgh">PDM Notes</h1> <nav class="svelte-l6obgh"><a href="/wails-tests" class="svelte-l6obgh">Wails 3</a> <a href="/database" class="svelte-l6obgh">Database</a></nav></header> <main class="content svelte-l6obgh"><!></main></div>`);
 function _layout($$anchor, $$props) {
   push($$props, false);
   init();

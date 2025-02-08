@@ -1,5 +1,5 @@
 import { t as template, a as append } from "../chunks/BGQeMav5.js";
-import { Y as create_text, b as block, i as set_hydrate_node, h as hydrating, Z as get_first_child, d as hydrate_next, D as get, _ as derived_safe_equal, H as HYDRATION_START_ELSE, g as remove_nodes, j as set_hydrating, n as hydrate_node, $ as HYDRATION_END, k as resume_effect, l as branch, m as pause_effect, a0 as INERT, a1 as array_from, I as active_effect, a2 as internal_set, N as mutable_source, B as source, a3 as EACH_INDEX_REACTIVE, a4 as pause_children, a5 as clear_text_content, a6 as run_out_transitions, a7 as destroy_effect, a8 as EACH_ITEM_REACTIVE, a9 as EACH_ITEM_IMMUTABLE, aa as get_next_sibling, L as is_array, ab as EACH_IS_CONTROLLED, v as queue_micro_task, ac as EACH_IS_ANIMATED, p as push, c as child, s as sibling, a as pop, u as untrack, r as reset, t as template_effect, F as set, ad as state } from "../chunks/TdN3I5eQ.js";
+import { Y as create_text, b as block, i as set_hydrate_node, h as hydrating, Z as get_first_child, d as hydrate_next, D as get, _ as derived_safe_equal, H as HYDRATION_START_ELSE, g as remove_nodes, j as set_hydrating, n as hydrate_node, $ as HYDRATION_END, k as resume_effect, l as branch, m as pause_effect, a0 as INERT, a1 as array_from, I as active_effect, a2 as internal_set, N as mutable_source, B as source, a3 as EACH_INDEX_REACTIVE, a4 as pause_children, a5 as clear_text_content, a6 as run_out_transitions, a7 as destroy_effect, a8 as EACH_ITEM_REACTIVE, a9 as EACH_ITEM_IMMUTABLE, aa as get_next_sibling, L as is_array, ab as EACH_IS_CONTROLLED, v as queue_micro_task, ac as EACH_IS_ANIMATED, p as push, c as child, s as sibling, t as template_effect, a as pop, u as untrack, r as reset, F as set, ad as state } from "../chunks/TdN3I5eQ.js";
 import { d as delegate, r as remove_textarea_child, s as set_text, e as event } from "../chunks/Cv_58GG0.js";
 import { i as if_block, b as bind_this } from "../chunks/CB4pBYuS.js";
 import { Q as QueryResult, b as bind_value, E as ExecuteQuery, a as Execute, G as GetName, s as set_attribute } from "../chunks/Bi1rSa6r.js";
@@ -399,14 +399,16 @@ var on_keydown_1 = (e, saveEdit, stopEditing) => {
 var root_8 = template(`<textarea class="cell-editor svelte-1vlgswv"></textarea>`);
 var root_4 = template(`<div class="table-container svelte-1vlgswv"><table class="svelte-1vlgswv"><thead><tr></tr></thead><tbody></tbody></table> <!></div>`);
 var root_2 = template(`<div class="query-results svelte-1vlgswv"><!></div>`);
-var root = template(`<div class="query-runner svelte-1vlgswv"><div class="container svelte-1vlgswv"><div class="left-panel svelte-1vlgswv"><div class="query-input svelte-1vlgswv"><textarea placeholder="Enter your SQL query..." class="svelte-1vlgswv"></textarea> <button class="svelte-1vlgswv">Execute Query</button> <button class="svelte-1vlgswv">Execute Statement</button> <button class="svelte-1vlgswv">Refresh</button></div> <div><h3>Database Name</h3> <p></p></div> <div class="tables-list svelte-1vlgswv"><h3 class="svelte-1vlgswv">Available Tables</h3> <ul class="svelte-1vlgswv"></ul></div></div> <div class="results-panel svelte-1vlgswv"><!></div></div></div>`);
+var root = template(`<div class="query-runner svelte-1vlgswv"><div class="container svelte-1vlgswv"><div class="left-panel svelte-1vlgswv"><div class="query-input svelte-1vlgswv"><textarea placeholder="Enter your SQL query..." class="svelte-1vlgswv"></textarea> <button class="svelte-1vlgswv">Execute Query</button> <button class="svelte-1vlgswv">Execute Statement</button> <button class="svelte-1vlgswv">Refresh</button></div> <div><h3 class="no-select">Database Name</h3> <p class="can-select"> </p></div> <div class="tables-list svelte-1vlgswv"><h3 class="svelte-1vlgswv">Available Tables</h3> <ul class="svelte-1vlgswv"></ul></div></div> <div class="results-panel svelte-1vlgswv"><!></div></div></div>`);
 function _page($$anchor, $$props) {
   push($$props, true);
   const [$$stores, $$cleanup] = setup_stores();
   const $results = () => store_get(results, "$results", $$stores);
   const $query = () => store_get(query, "$query", $$stores);
+  const $dbFile = () => store_get(dbFile, "$dbFile", $$stores);
   const $tables = () => store_get(tables, "$tables", $$stores);
   const $editingCell = () => store_get(editingCell, "$editingCell", $$stores);
+  const $editorStyle = () => store_get(editorStyle, "$editorStyle", $$stores);
   const cleanQuery = (sql) => sql.trim().replace(/\n/g, " ");
   async function executeQuery() {
     try {
@@ -436,13 +438,14 @@ function _page($$anchor, $$props) {
   let editValue = state("");
   let tableContainer;
   const editorStyle = derived(editingCell, ($editingCell2) => {
-    return $editingCell2 ? {
-      position: "absolute",
-      top: `${$editingCell2.top}px`,
-      left: `${$editingCell2.left}px`,
-      width: `${$editingCell2.width}px`,
-      height: `${$editingCell2.height}px`
-    } : {};
+    if (!$editingCell2.editing) return "";
+    return `
+            position: absolute;
+            top: ${$editingCell2.top}px;
+            left: ${$editingCell2.left}px;
+            width: ${$editingCell2.width}px;
+            height: ${$editingCell2.height}px;
+        `;
   });
   function startEditing(event2, row, column, value) {
     const cell = event2.target;
@@ -455,9 +458,18 @@ function _page($$anchor, $$props) {
       column,
       width: rect.width,
       height: rect.height,
-      top: rect.top - tableRect.top,
-      left: rect.left - tableRect.left
+      top: rect.top - tableRect.top + tableContainer.scrollTop,
+      left: rect.left - tableRect.left + tableContainer.scrollLeft
     }));
+    setTimeout(
+      () => {
+        const textarea = document.querySelector(".cell-editor");
+        if (textarea) {
+          textarea.focus();
+        }
+      },
+      0
+    );
   }
   function stopEditing() {
     store_mutate(editingCell, untrack($editingCell).editing = false, untrack($editingCell));
@@ -469,7 +481,6 @@ function _page($$anchor, $$props) {
       const colIndex = $editingCell().column;
       const rowId = $results().rows[rowIndex][0];
       const columnName = $results().columns[colIndex];
-      alert(`UPDATE ${$query().table} SET ${columnName} = ${get(editValue)} WHERE rowid = ${rowId}`);
     } catch (error) {
       console.error("Failed to update:", error);
     } finally {
@@ -484,10 +495,10 @@ function _page($$anchor, $$props) {
   var div_1 = child(div);
   var div_2 = child(div_1);
   var div_3 = child(div_2);
-  var textarea = child(div_3);
-  remove_textarea_child(textarea);
-  textarea.__keydown = [on_keydown, executeQuery];
-  var button = sibling(textarea, 2);
+  var textarea_1 = child(div_3);
+  remove_textarea_child(textarea_1);
+  textarea_1.__keydown = [on_keydown, executeQuery];
+  var button = sibling(textarea_1, 2);
   button.__click = executeQuery;
   var button_1 = sibling(button, 2);
   button_1.__click = [
@@ -501,16 +512,17 @@ function _page($$anchor, $$props) {
   reset(div_3);
   var div_4 = sibling(div_3, 2);
   var p = sibling(child(div_4), 2);
-  p.textContent = dbFile;
+  var text = child(p, true);
+  reset(p);
   reset(div_4);
   var div_5 = sibling(div_4, 2);
   var ul = sibling(child(div_5), 2);
   each(ul, 5, $tables, index, ($$anchor2, table) => {
     var li = root_1();
     li.__click = [on_click, selectTable, table];
-    var text = child(li, true);
+    var text_1 = child(li, true);
     reset(li);
-    template_effect(() => set_text(text, get(table)));
+    template_effect(() => set_text(text_1, get(table)));
     append($$anchor2, li);
   });
   reset(ul);
@@ -525,9 +537,9 @@ function _page($$anchor, $$props) {
       {
         var consequent = ($$anchor3) => {
           var div_8 = root_3();
-          var text_1 = child(div_8, true);
+          var text_2 = child(div_8, true);
           reset(div_8);
-          template_effect(() => set_text(text_1, $results().error));
+          template_effect(() => set_text(text_2, $results().error));
           append($$anchor3, div_8);
         };
         var alternate = ($$anchor3) => {
@@ -537,9 +549,9 @@ function _page($$anchor, $$props) {
           var tr = child(thead);
           each(tr, 5, () => $results().columns, index, ($$anchor4, column) => {
             var th = root_5();
-            var text_2 = child(th, true);
+            var text_3 = child(th, true);
             reset(th);
-            template_effect(() => set_text(text_2, get(column)));
+            template_effect(() => set_text(text_3, get(column)));
             append($$anchor4, th);
           });
           reset(tr);
@@ -552,12 +564,12 @@ function _page($$anchor, $$props) {
               set_attribute(td, "data-row", index$1);
               set_attribute(td, "data-col", cellIndex);
               td.__dblclick = (e) => startEditing(e, index$1, cellIndex, get(cell));
-              var text_3 = child(td, true);
+              var text_4 = child(td, true);
               reset(td);
               template_effect(
                 ($0) => {
                   set_attribute(td, "style", `--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${$0 ?? ""}`);
-                  set_text(text_3, get(cell));
+                  set_text(text_4, get(cell));
                 },
                 [
                   () => JSON.stringify({
@@ -577,18 +589,16 @@ function _page($$anchor, $$props) {
           var node_2 = sibling(table_1, 2);
           {
             var consequent_1 = ($$anchor4) => {
-              var textarea_1 = root_8();
-              remove_textarea_child(textarea_1);
-              textarea_1.__keydown = [on_keydown_1, saveEdit, stopEditing];
-              template_effect(($0) => set_attribute(textarea_1, "style", $0), [
-                () => Object.entries(editorStyle).map(([k, v]) => `${k}:${v}`).join(";")
-              ]);
-              event("blur", textarea_1, saveEdit);
-              bind_value(textarea_1, () => get(editValue), ($$value) => set(editValue, $$value));
-              append($$anchor4, textarea_1);
+              var textarea_2 = root_8();
+              remove_textarea_child(textarea_2);
+              textarea_2.__keydown = [on_keydown_1, saveEdit, stopEditing];
+              template_effect(() => set_attribute(textarea_2, "style", $editorStyle()));
+              event("blur", textarea_2, saveEdit);
+              bind_value(textarea_2, () => get(editValue), ($$value) => set(editValue, $$value));
+              append($$anchor4, textarea_2);
             };
             if_block(node_2, ($$render) => {
-              if (editingCell) $$render(consequent_1);
+              if ($editingCell().editing) $$render(consequent_1);
             });
           }
           reset(div_9);
@@ -610,7 +620,8 @@ function _page($$anchor, $$props) {
   reset(div_6);
   reset(div_1);
   reset(div);
-  bind_value(textarea, () => $query().sql, ($$value) => store_mutate(query, untrack($query).sql = $$value, untrack($query)));
+  template_effect(() => set_text(text, $dbFile()));
+  bind_value(textarea_1, () => $query().sql, ($$value) => store_mutate(query, untrack($query).sql = $$value, untrack($query)));
   append($$anchor, div);
   pop();
   $$cleanup();

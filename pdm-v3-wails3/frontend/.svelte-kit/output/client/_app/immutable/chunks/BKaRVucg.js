@@ -1,5 +1,5 @@
 import { x as component_context, T as user_pre_effect, w as user_effect, R as run_all, u as untrack, V as run, D as get, W as deep_read_state, X as derived } from "./TdN3I5eQ.js";
-import { s as stores, p as page$2 } from "./BgykqzTN.js";
+import { s as stores, p as page$2 } from "./C-Bfzokj.js";
 function init(immutable = false) {
   const context = (
     /** @type {ComponentContextLegacy} */

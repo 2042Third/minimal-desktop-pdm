@@ -48,6 +48,18 @@ func main() {
 		},
 	})
 
+	// Create a menu
+	menu := app.NewMenu()
+	fileMenu := menu.AddSubmenu("File")
+	fileMenu.Add("Exit").OnClick(func(ctx *application.Context) {
+		app.Quit()
+	})
+
+	helpMenu := menu.AddSubmenu("Help")
+	helpMenu.Add("Home").OnClick(func(ctx *application.Context) {
+		app.CurrentWindow().SetURL("/")
+	})
+
 	// Create a new window with the necessary options.
 	// 'Title' is the title of the window.
 	// 'Mac' options tailor the window when running on macOS.
@@ -69,9 +81,15 @@ func main() {
 		Windows: application.WindowsWindow{
 			BackdropType: 0,
 			Theme:        2,
+			Menu:         menu,
 		},
 		BackgroundColour: application.NewRGB(255, 255, 255),
 		URL:              "/",
+		KeyBindings: map[string]func(window *application.WebviewWindow){
+			"CmdOrCtrl+R": func(window *application.WebviewWindow) {
+				window.Reload()
+			},
+		},
 	})
 
 	// Create a goroutine that emits an event containing the current time every second.

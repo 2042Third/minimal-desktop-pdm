@@ -140,8 +140,8 @@
             </div>
 
             <div>
-                <h3>Database Name</h3>
-                <p>{$dbFile}</p>
+                <h3 class="no-select">Database Name</h3>
+                <p class="can-select-text">{$dbFile}</p>
             </div>
 
             <div class="tables-list">
@@ -167,24 +167,29 @@
                             <table>
                                 <thead>
                                 <tr>
-                                    {#each $results.columns as column}
-                                        <th>{column}</th>
+                                    {#each $results.columns as column, i}
+                                        {#if i !== 0}
+                                            <th>{column}</th>
+                                        {/if}
                                     {/each}
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {#each $results.rows as row, index}
                                     <tr>
-                                        {#each row as cell, cellIndex}
-                                            <td
-                                                    data-row={index}
-                                                    data-col={cellIndex}
-                                                    style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
-                                                    ondblclick={(e) => startEditing(e, index, cellIndex, cell)}
-                                            >
-                                                {cell}
-                                            </td>
-                                        {/each}
+                                            {#each row as cell, cellIndex}
+                                                {#if cellIndex !== 0}
+                                                    <td
+                                                            class="can-select-text"
+                                                            data-row={index}
+                                                            data-col={cellIndex}
+                                                            style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
+                                                            ondblclick={(e) => startEditing(e, index, cellIndex, cell)}
+                                                    >
+                                                        {cell}
+                                                    </td>
+                                                {/if}
+                                            {/each}
                                     </tr>
                                 {/each}
                                 </tbody>
