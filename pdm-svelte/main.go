@@ -4,7 +4,6 @@ import (
 	"embed"
 	_ "embed"
 	"log"
-	"pdm/services"
 	"time"
 
 	"github.com/wailsapp/wails/v3/pkg/application"
@@ -29,16 +28,10 @@ func main() {
 	// 'Bind' is a list of Go struct instances. The frontend has access to the methods of these instances.
 	// 'Mac' options tailor the application when running an macOS.
 	app := application.New(application.Options{
-		Name:        "pdm-v3-wails3",
+		Name:        "pdm-svelte",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
-			application.NewService(&services.NativeModules{
-				CellClicked: func(data *application.Context) {},
-			}),
-			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"), application.ServiceOptions{
-				Name: "Database",
-			}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),
@@ -53,24 +46,15 @@ func main() {
 	// 'Mac' options tailor the window when running on macOS.
 	// 'BackgroundColour' is the background colour of the window.
 	// 'URL' is the URL that will be loaded into the webview.
-	mainWindow := app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
-		Title:          "Window 1",
-		Width:          1280,
-		Height:         960,
-		MinWidth:       700,
-		MinHeight:      500,
-		BackgroundType: 0,
+	app.NewWebviewWindowWithOptions(application.WebviewWindowOptions{
+		Title: "Window 1",
 		Mac: application.MacWindow{
-			InvisibleTitleBarHeight: 20,
+			InvisibleTitleBarHeight: 50,
 			Backdrop:                application.MacBackdropTranslucent,
 			TitleBar:                application.MacTitleBarHiddenInset,
-			Appearance:              "NSAppearanceNameDarkAqua",
 		},
-		Windows: application.WindowsWindow{
-			BackdropType: 0,
-			Theme:        2,
-		},
-		BackgroundColour: application.NewRGB(27, 38, 54),
+		Windows:          application.WindowsWindow{},
+		BackgroundColour: application.NewRGB(255, 255, 255),
 		URL:              "/",
 	})
 
@@ -83,20 +67,6 @@ func main() {
 			time.Sleep(time.Second)
 		}
 	}()
-
-	appState := services.NewAppState(app, mainWindow)
-	if err := appState.Init(func(data *application.Context) {
-
-		parsed, err := services.CellClickCallBack(data)
-		if err != nil {
-			app.Logger.Error("Error parsing cell info", "error", err.Error())
-			return
-		}
-		app.Logger.Info("Edit Cell Context menu", "cellInfo", parsed)
-
-	}); err != nil {
-		log.Fatalf("Error initializing app state: %s", err.Error())
-	}
 
 	// Run the application. This blocks until the application has been exited.
 	err := app.Run()

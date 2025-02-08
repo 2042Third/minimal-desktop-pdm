@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	basicSqliteStr()
+	// basicSqliteStr()
 	//basicSqlite()
 
 	db := services.NewDatabase()
