@@ -98,26 +98,31 @@ const getEditorStyle = computed(() => {
 
 const startEditing = (event, row, column, value) => {
   const cell = event.target;
-  const rect = cell.getBoundingClientRect();
-  const tableRect = tableContainer.value.getBoundingClientRect();
-
   editValue.value = value;
-  editingCell.value = {
-    row,
-    column,
-    width: rect.width,
-    height: rect.height,
-    top: rect.top - tableRect.top,
-    left: rect.left - tableRect.left
-  };
+  editingCell.value = { row, column };
 
-  nextTick(() => {
+  const updatePosition = () => {
+    const rect = cell.getBoundingClientRect();
+
     const editor = document.querySelector('.cell-editor');
     if (editor) {
-      editor.focus();
+      editor.style.top = `${rect.top }px`;
+      editor.style.left = `${rect.left }px`;
       editor.style.width = `${rect.width}px`;
       editor.style.height = `${rect.height}px`;
     }
+  };
+
+  // Store the scroll handler reference so we can remove it later
+  scrollHandler.value = updatePosition;
+
+  // Add scroll event listener
+  tableContainer.value.addEventListener('scroll', updatePosition);
+
+  nextTick(() => {
+    updatePosition();
+    const editor = document.querySelector('.cell-editor');
+    if (editor) editor.focus();
   });
 };
 
@@ -125,10 +130,10 @@ const startEditing = (event, row, column, value) => {
 // Update the stopEditing function to remove the scroll listener
 const stopEditing = () => {
   if (tableContainer.value && scrollHandler.value) {
-    tableContainer.value.removeEventListener('scroll', scrollHandler.value)
-    scrollHandler.value = null
+    tableContainer.value.removeEventListener('scroll', scrollHandler.value);
+    scrollHandler.value = null;
   }
-  editingCell.value = null
+  editingCell.value = null;
 }
 
 // Add onBlur handler
@@ -241,10 +246,9 @@ const saveEdit = async () => {
               </tbody>
             </table>
             <textarea
-              v-show="editingCell"
+              v-if="editingCell"
               v-model="editValue"
               class="cell-editor"
-              :style="getEditorStyle"
               @blur="saveEdit"
               @keyup.enter="saveEdit"
               @keyup.esc="stopEditing"
@@ -260,9 +264,10 @@ const saveEdit = async () => {
 
 <style scoped>
 
-td {
-  height: var(--cell-height, 40px);
-  width: var(--cell-width, 100px);
+.table-container {
+  position: static;
+  height: 100%;
+  overflow: auto;
 }
 
 .cell-editor {
@@ -274,7 +279,6 @@ td {
   background: var(--color-background);
   color: var(--color-text);
   z-index: 1000;
-  resize: none;
   font-family: inherit;
   font-size: inherit;
 }
@@ -363,11 +367,6 @@ td {
   height: 100%;
 }
 
-.table-container {
-  position: relative;
-  height: 100%;
-  overflow: auto;
-}
 
 table {
   width: 100%;
