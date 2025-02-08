@@ -94,7 +94,7 @@
       "_attributes.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.DLaRVqP1.css"
+      "_app/immutable/assets/_layout.COt4TCKR.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -116,7 +116,7 @@
       "_attributes.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.gwdPWV5o.css"
+      "_app/immutable/assets/_page.-j9m_a0C.css"
     ]
   },
   "src/routes/wails-tests/+page.svelte": {

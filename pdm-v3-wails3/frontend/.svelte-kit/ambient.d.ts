@@ -44,7 +44,6 @@ declare module '$env/static/private' {
 	export const COMSPEC: string;
 	export const DRIVERDATA: string;
 	export const EDITOR: string;
-	export const FRONTEND_DEVSERVER_URL: string;
 	export const GIT_INSTALL_ROOT: string;
 	export const GO111MODULE: string;
 	export const GOPATH: string;
@@ -127,7 +126,6 @@ declare module '$env/static/private' {
 	export const VBOX_MSI_INSTALL_PATH: string;
 	export const VK_SDK_PATH: string;
 	export const VULKAN_SDK: string;
-	export const WAILS_VITE_PORT: string;
 	export const WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: string;
 	export const WEBVIEW2_BROWSER_EXECUTABLE_FOLDER: string;
 	export const WEBVIEW2_PIPE_FOR_SCRIPT_DEBUGGER: string;
@@ -186,7 +184,6 @@ declare module '$env/dynamic/private' {
 		COMSPEC: string;
 		DRIVERDATA: string;
 		EDITOR: string;
-		FRONTEND_DEVSERVER_URL: string;
 		GIT_INSTALL_ROOT: string;
 		GO111MODULE: string;
 		GOPATH: string;
@@ -269,7 +266,6 @@ declare module '$env/dynamic/private' {
 		VBOX_MSI_INSTALL_PATH: string;
 		VK_SDK_PATH: string;
 		VULKAN_SDK: string;
-		WAILS_VITE_PORT: string;
 		WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS: string;
 		WEBVIEW2_BROWSER_EXECUTABLE_FOLDER: string;
 		WEBVIEW2_PIPE_FOR_SCRIPT_DEBUGGER: string;

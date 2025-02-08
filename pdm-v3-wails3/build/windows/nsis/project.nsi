@@ -88,6 +88,8 @@ Section
     
     !insertmacro wails.files
 
+    File "${PDM_DLL_DEPS}" # Include the DLL dependencies
+
     CreateShortcut "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
     CreateShortCut "$DESKTOP\${INFO_PRODUCTNAME}.lnk" "$INSTDIR\${PRODUCT_EXECUTABLE}"
 
@@ -105,6 +107,8 @@ Section "uninstall"
 
     Delete "$SMPROGRAMS\${INFO_PRODUCTNAME}.lnk"
     Delete "$DESKTOP\${INFO_PRODUCTNAME}.lnk"
+
+    Delete "${PDM_DLL_DEPS}" # Remove the DLL dependencies
 
     !insertmacro wails.unassociateFiles
 

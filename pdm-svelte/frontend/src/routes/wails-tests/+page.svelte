@@ -1,1 +1,0 @@
-<h1>Wails3 Tests</h1>

@@ -217,6 +217,11 @@
 
 <style>
 
+    .cells-header {
+        position: sticky;
+        cursor: unset;
+    }
+
     td {
         height: var(--cell-height, 40px);
         width: var(--cell-width, 100px);

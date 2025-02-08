@@ -10,6 +10,7 @@ vars:
   APP_NAME: "pdm-v3-wails3"
   BIN_DIR: "bin"
   VITE_PORT: '{{.WAILS_VITE_PORT | default 9245}}'
+  DLL_DIR: "pdm/encrypted-sqlite/install/bin"
 
 tasks:
   build:

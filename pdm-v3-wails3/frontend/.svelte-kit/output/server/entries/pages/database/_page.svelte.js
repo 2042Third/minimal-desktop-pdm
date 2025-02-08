@@ -23,31 +23,37 @@ function _page($$payload, $$props) {
         `;
   });
   const each_array = ensure_array_like(store_get($$store_subs ??= {}, "$tables", tables));
-  $$payload.out += `<div class="query-runner svelte-1vlgswv"><div class="container svelte-1vlgswv"><div class="left-panel svelte-1vlgswv"><div class="query-input svelte-1vlgswv"><textarea placeholder="Enter your SQL query..." class="svelte-1vlgswv">`;
+  $$payload.out += `<div class="query-runner svelte-quzy97"><div class="container svelte-quzy97"><div class="left-panel svelte-quzy97"><div class="query-input svelte-quzy97"><textarea placeholder="Enter your SQL query..." class="svelte-quzy97">`;
   const $$body = escape_html(store_get($$store_subs ??= {}, "$query", query).sql);
   if ($$body) {
     $$payload.out += `${$$body}`;
   }
-  $$payload.out += `</textarea> <button class="svelte-1vlgswv">Execute Query</button> <button class="svelte-1vlgswv">Execute Statement</button> <button class="svelte-1vlgswv">Refresh</button></div> <div><h3 class="no-select">Database Name</h3> <p class="can-select">${escape_html(store_get($$store_subs ??= {}, "$dbFile", dbFile))}</p></div> <div class="tables-list svelte-1vlgswv"><h3 class="svelte-1vlgswv">Available Tables</h3> <ul class="svelte-1vlgswv"><!--[-->`;
+  $$payload.out += `</textarea> <button class="svelte-quzy97">Execute Query</button> <button class="svelte-quzy97">Execute Statement</button> <button class="svelte-quzy97">Refresh</button></div> <div><h3 class="no-select">Database Name</h3> <p class="can-select-text">${escape_html(store_get($$store_subs ??= {}, "$dbFile", dbFile))}</p></div> <div class="tables-list svelte-quzy97"><h3 class="svelte-quzy97">Available Tables</h3> <ul class="svelte-quzy97"><!--[-->`;
   for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
     let table = each_array[$$index];
-    $$payload.out += `<li class="svelte-1vlgswv">${escape_html(table)}</li>`;
+    $$payload.out += `<li class="svelte-quzy97">${escape_html(table)}</li>`;
   }
-  $$payload.out += `<!--]--></ul></div></div> <div class="results-panel svelte-1vlgswv">`;
+  $$payload.out += `<!--]--></ul></div></div> <div class="results-panel svelte-quzy97">`;
   if (results) {
     $$payload.out += "<!--[-->";
-    $$payload.out += `<div class="query-results svelte-1vlgswv">`;
+    $$payload.out += `<div class="query-results svelte-quzy97">`;
     if (store_get($$store_subs ??= {}, "$results", results).error) {
       $$payload.out += "<!--[-->";
-      $$payload.out += `<div class="error svelte-1vlgswv">${escape_html(store_get($$store_subs ??= {}, "$results", results).error)}</div>`;
+      $$payload.out += `<div class="error svelte-quzy97">${escape_html(store_get($$store_subs ??= {}, "$results", results).error)}</div>`;
     } else {
       $$payload.out += "<!--[!-->";
       const each_array_1 = ensure_array_like(store_get($$store_subs ??= {}, "$results", results).columns);
       const each_array_2 = ensure_array_like(store_get($$store_subs ??= {}, "$results", results).rows);
-      $$payload.out += `<div class="table-container svelte-1vlgswv"><table class="svelte-1vlgswv"><thead><tr><!--[-->`;
-      for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
-        let column = each_array_1[$$index_1];
-        $$payload.out += `<th class="svelte-1vlgswv">${escape_html(column)}</th>`;
+      $$payload.out += `<div class="table-container svelte-quzy97"><table class="svelte-quzy97"><thead><tr><!--[-->`;
+      for (let i = 0, $$length = each_array_1.length; i < $$length; i++) {
+        let column = each_array_1[i];
+        if (i !== 0) {
+          $$payload.out += "<!--[-->";
+          $$payload.out += `<th class="svelte-quzy97">${escape_html(column)}</th>`;
+        } else {
+          $$payload.out += "<!--[!-->";
+        }
+        $$payload.out += `<!--]-->`;
       }
       $$payload.out += `<!--]--></tr></thead><tbody><!--[-->`;
       for (let index = 0, $$length = each_array_2.length; index < $$length; index++) {
@@ -56,18 +62,24 @@ function _page($$payload, $$props) {
         $$payload.out += `<tr><!--[-->`;
         for (let cellIndex = 0, $$length2 = each_array_3.length; cellIndex < $$length2; cellIndex++) {
           let cell = each_array_3[cellIndex];
-          $$payload.out += `<td${attr("data-row", index)}${attr("data-col", cellIndex)}${attr("style", `--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${stringify(JSON.stringify({
-            table: store_get($$store_subs ??= {}, "$query", query).table,
-            rowid: row[0],
-            column: store_get($$store_subs ??= {}, "$results", results).columns[cellIndex]
-          }))}`)} class="svelte-1vlgswv">${escape_html(cell)}</td>`;
+          if (cellIndex !== 0) {
+            $$payload.out += "<!--[-->";
+            $$payload.out += `<td class="can-select-text svelte-quzy97"${attr("data-row", index)}${attr("data-col", cellIndex)}${attr("style", `--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: ${stringify(JSON.stringify({
+              table: store_get($$store_subs ??= {}, "$query", query).table,
+              rowid: row[0],
+              column: store_get($$store_subs ??= {}, "$results", results).columns[cellIndex]
+            }))}`)}>${escape_html(cell)}</td>`;
+          } else {
+            $$payload.out += "<!--[!-->";
+          }
+          $$payload.out += `<!--]-->`;
         }
         $$payload.out += `<!--]--></tr>`;
       }
       $$payload.out += `<!--]--></tbody></table> `;
       if (store_get($$store_subs ??= {}, "$editingCell", editingCell).editing) {
         $$payload.out += "<!--[-->";
-        $$payload.out += `<textarea class="cell-editor svelte-1vlgswv"${attr("style", store_get($$store_subs ??= {}, "$editorStyle", editorStyle))}>`;
+        $$payload.out += `<textarea class="cell-editor svelte-quzy97"${attr("style", store_get($$store_subs ??= {}, "$editorStyle", editorStyle))}>`;
         const $$body_1 = escape_html(editValue);
         if ($$body_1) {
           $$payload.out += `${$$body_1}`;
