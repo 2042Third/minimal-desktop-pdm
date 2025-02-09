@@ -62,6 +62,7 @@
         gap: 0.5rem;
         z-index: 1000;
         max-width: 400px;
+        min-width: 400px;
     }
 
     .notification {
