@@ -217,26 +217,29 @@
           <table>
             <thead>
               <tr>
-                {#each $results.columns as column, i} {#if i !== 0}
-                <th>{column}</th>
-                {/if} {/each}
+                {#each $results.columns as column, i}
+                  {#if !(i === 0 && ($results.columns[i] === 'id' || $results.columns[i] === 'rowid'))}
+                    <th>{column}</th>
+                  {/if} {/each}
               </tr>
             </thead>
 
             <tbody>
               {#each $results.rows as row, index}
               <tr>
-                {#each row as cell, cellIndex} {#if cellIndex !== 0}
-                <td
-                  class="can-select-text"
-                  data-row="{index}"
-                  data-col="{cellIndex}"
-                  style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
-                  ondblclick={(e)=>startEditing(e, index, cellIndex, cell)}
-                >
-                  {cell}
-                </td>
-                {/if} {/each}
+                {#each row as cell, cellIndex}
+                  {#if !(cellIndex === 0 && ($results.columns[cellIndex] === 'id' || $results.columns[cellIndex] === 'rowid'))}
+                    <td
+                      class="can-select-text"
+                      data-row="{index}"
+                      data-col="{cellIndex}"
+                      style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
+                      ondblclick={(e)=>startEditing(e, index, cellIndex, cell)}
+                    >
+                      {cell}
+                    </td>
+                  {/if}
+                {/each}
               </tr>
               {/each}
             </tbody>
