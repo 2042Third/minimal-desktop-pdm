@@ -20,6 +20,7 @@ type Database struct {
 func NewDatabase() *Database {
 	return &Database{}
 }
+
 func NewDatabaseWithOptions(path, passwd string) *Database {
 	db := &Database{}
 	db.Open(path, passwd)
