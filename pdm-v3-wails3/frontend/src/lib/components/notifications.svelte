@@ -13,12 +13,12 @@
       animate:flip={{ duration: 300 }}
       transition:fly={{ x: 100, duration: 300 }}
     >
-      <div class="icon">
+      <div class="icon {notification.type === 'progress' ? 'spin' : ''}">
         <notification.icon
-        size={20}
-        class={notification.type === 'progress' ? 'spin' : ''}
+          size={20}
         />
       </div>
+
       <div class="content">
         {#if notification.title}
           <div class="title">{notification.title}</div>
@@ -144,6 +144,8 @@
     }
 
     .spin {
+        display: grid;
+        place-items: center;
         animation: spin 1s linear infinite;
     }
 

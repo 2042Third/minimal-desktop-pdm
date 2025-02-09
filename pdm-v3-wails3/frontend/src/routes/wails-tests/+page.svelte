@@ -8,6 +8,7 @@
     import {untrack} from "svelte";
 
     import { Tween } from 'svelte/motion';
+    import {Loader} from "lucide-svelte";
 
     console.log("Mounted");
 
@@ -110,6 +111,7 @@
             duration: 5000
         });
     }}>Success Notification</button>
+
     <button onclick={ () => {
         notifications.add({
             type: 'error',
@@ -186,6 +188,7 @@
 </div>
 
 <style >
+
     .about {
         width: 100%; /* Take full width of parent */
         display: flex;
