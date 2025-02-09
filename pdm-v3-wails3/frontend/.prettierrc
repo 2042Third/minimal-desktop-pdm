@@ -1,0 +1,11 @@
+{
+  "svelteStrictMode": true,
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "html"
+      }
+    }
+  ]
+}

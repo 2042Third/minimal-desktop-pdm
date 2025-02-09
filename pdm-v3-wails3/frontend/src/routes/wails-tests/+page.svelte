@@ -1,5 +1,4 @@
 <script >
-    // import {GreetService, initialize} from "../wrapper.js";
     import {GreetService} from "../../../bindings/pdm";
     import {NativeModules} from "@pdm/services";
     import {time} from "@stores/timeStore.js";
@@ -7,8 +6,7 @@
     import {notifications} from "@stores/notifications";
     import {untrack} from "svelte";
 
-    import { Tween } from 'svelte/motion';
-    import {Loader} from "lucide-svelte";
+    console.log('notifications store:', notifications); // Should show the store methods
 
     console.log("Mounted");
 
