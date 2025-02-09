@@ -60,6 +60,14 @@ function createNotificationStore() {
           remove(id);
         }, notification.duration);
       }
+      return id;
+    },
+    updateProgress: (id: string, progress: number) => {
+      update(notifications =>
+        notifications.map(n =>
+          n.id === id ? { ...n, progress } : n
+        )
+      );
     },
     remove: (id: string) => {
       update(notifications => notifications.filter(n => n.id !== id));

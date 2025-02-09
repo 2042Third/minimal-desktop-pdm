@@ -2,11 +2,12 @@
     // import {GreetService, initialize} from "../wrapper.js";
     import {GreetService} from "../../../bindings/pdm";
     import {NativeModules} from "@pdm/services";
-    import {time} from "../../stores/timeStore.js";
+    import {time} from "@stores/timeStore.js";
 
     import {notifications} from "@stores/notifications";
+    import {untrack} from "svelte";
 
-
+    import { Tween } from 'svelte/motion';
 
     console.log("Mounted");
 
@@ -15,6 +16,8 @@
     let cHelloOut = $state("");
     let cStringOut = $state("");
     let getString = $state("");
+    let progress = $state(0);
+    let progressId = $state('');
 
 
     const makeNotification = () => {
@@ -59,13 +62,95 @@
         });
     }
 
+    const startProgress = async () => {
+        console.log("Starting progress");
+        for (let i = 0; i <= 10; i += 1) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            console.log("Progress: ", i);
+            progress = i*10;
+        }
+    }
 
+    $effect(() => {
+        $inspect(progress);
+        if (progressId === ''){
+            return;
+        }
+        if (progress < 100) {
+            console.log("$effect: ", progress);
+            notifications.updateProgress(progressId, progress);
+        } else {
+            console.log("$effect remove: ", progressId);
+            notifications.remove(progressId);
+            notifications.add({
+                type: 'success',
+                title: 'Download',
+                message: 'Download completed successfully',
+                duration: 5000
+            });
+            untrack(() => {
+                console.log("Cleanup");
+                progressId = ''; // Reset progress id, and prevents $effect loop. But untrack will also do that.
+                progress = 0;
+            })
+
+        }
+    });
 
 </script>
 
 <div class="about">
     <h1>Hello {name}!</h1>
-    <button onclick={makeNotification}>Create Notification</button>
+
+    <button onclick={ () => {
+        notifications.add({
+            type: 'success',
+            title: 'Success',
+            message: 'Operation completed successfully',
+            duration: 5000
+        });
+    }}>Success Notification</button>
+    <button onclick={ () => {
+        notifications.add({
+            type: 'error',
+            title: 'Error',
+            message: 'Something went wrong',
+            actions: [
+                {
+                    label: 'Retry',
+                    onClick: () => console.log('Retrying...')
+                }
+            ]
+        });
+    }}>Show Error</button>
+    <button onclick={()=> {
+        progressId = notifications.add({
+            type: 'progress',
+            title: 'Downloading',
+            message: 'file.pdf',
+            progress: 0
+        });
+        startProgress();
+    }}>Show Progress</button>
+
+    <button onclick={ () => {
+        notifications.add({
+            type: 'info',
+            title: 'Information',
+            message: 'Email is sent',
+            duration: 5000
+        });
+    }}>Info Notification</button>
+
+    <button onclick={ () => {
+        notifications.add({
+            type: 'warning',
+            title: 'Warning',
+            message: 'Bad completed warningly',
+            duration: 5000
+        });
+    }}>Warning Notification</button>
+
     <p>Enter your name:</p>
     <input
             bind:value={name}
@@ -102,7 +187,6 @@
 
 <style >
     .about {
-        height: 100%; /* Instead of 100vh */
         width: 100%; /* Take full width of parent */
         display: flex;
         flex-direction: column;

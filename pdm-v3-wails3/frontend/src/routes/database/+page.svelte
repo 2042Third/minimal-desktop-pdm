@@ -59,7 +59,7 @@
 
     // Cell editing
     let editValue = $state('');
-    let tableContainer:any;
+    let tableContainer:any = $state(null);
 
 
     // Define a derived store for editorStyle
@@ -356,10 +356,7 @@
         border: 1px solid var(--color-border);
         border-radius: 4px;
     }
-    /* CSS remains largely the same, but with these additions/modifications */
-    :global(body) {
-        color-scheme: light dark;
-    }
+
 
     .query-runner {
         --text-primary: var(--color-text, #000);

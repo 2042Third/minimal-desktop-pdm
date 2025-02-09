@@ -3,9 +3,9 @@
     import Notifications from '$lib/components/notifications.svelte';
 </script>
 
-<div class="app-layout no-select">
-    <header class="can-drag">
-        <h1 >PDM Notes</h1>
+<div class="app-layout ">
+    <header class="can-drag no-select">
+        <h1 class="">PDM Notes</h1>
         <nav>
             <a
                     href="/wails-tests"
@@ -29,6 +29,11 @@
 </div>
 
 <style>
+
+    /*!* CSS remains largely the same, but with these additions/modifications *!*/
+    :global(body) {
+        color-scheme: light dark;
+    }
 
     :global {
         .no-select { /* Disable text selection */

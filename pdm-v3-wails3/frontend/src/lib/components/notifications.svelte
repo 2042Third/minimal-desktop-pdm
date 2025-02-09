@@ -2,22 +2,8 @@
   import { notifications, type Notification } from '@stores/notifications';
   import { flip } from 'svelte/animate';
   import { fly } from 'svelte/transition';
-  import {
-    CheckCircle,
-    XCircle,
-    Info,
-    AlertTriangle,
-    Loader,
-    X
-  } from 'lucide-svelte';
+  import {X} from "lucide-svelte";
 
-  const icons = {
-    success: CheckCircle,
-    error: XCircle,
-    info: Info,
-    warning: AlertTriangle,
-    progress: Loader
-  };
 </script>
 
 <div class="notifications-container">
@@ -43,13 +29,13 @@
             <div
               class="progress-fill"
               style="width: {notification.progress}%"
-            />
+            ></div>
           </div>
         {/if}
         {#if notification.actions}
           <div class="actions">
             {#each notification.actions as action}
-              <button on:click={action.onClick}>
+              <button onclick={action.onClick}>
                 {action.label}
               </button>
             {/each}
@@ -57,8 +43,8 @@
         {/if}
       </div>
       <button
-        class="close"
-        on:click={() => notifications.remove(notification.id)}
+        class="close icon"
+        onclick={() => notifications.remove(notification.id)}
       >
         <X size={16} />
       </button>
