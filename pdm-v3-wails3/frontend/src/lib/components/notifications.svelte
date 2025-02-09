@@ -13,9 +13,8 @@
       animate:flip={{ duration: 300 }}
       transition:fly={{ x: 100, duration: 300 }}
     >
-      <div class="icon {notification.type === 'progress' ? 'spin' : ''}">
+      <div class="icon {notification.type} {notification.type === 'progress' ? 'spin' : ''}">
         <notification.icon
-          size={20}
         />
       </div>
 
@@ -69,18 +68,22 @@
         display: flex;
         align-items: flex-start;
         gap: 0.75rem;
-        padding: 1rem;
+        padding: 0.85rem;
         background-color: var(--color-background-soft);
         border: 1px solid var(--color-border);
-        border-radius: 6px;
+        border-radius: 13px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
-    .notification.success { border-left: 4px solid #4caf50; }
-    .notification.error { border-left: 4px solid #f44336; }
-    .notification.info { border-left: 4px solid #2196f3; }
-    .notification.warning { border-left: 4px solid #ff9800; }
-    .notification.progress { border-left: 4px solid #9c27b0; }
+    .icon {
+        size: 15px;
+    }
+
+    .icon.success { color: #4caf50; }
+    .icon.error { color: #f44336; }
+    .icon.info { color: #2196f3; }
+    .icon.warning { color: #ff9800; }
+    .icon.progress { color: #ffffff; }
 
     .content {
         flex: 1;
