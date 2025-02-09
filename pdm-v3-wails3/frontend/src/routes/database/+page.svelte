@@ -129,11 +129,11 @@
         <!-- Left Panel -->
         <div class="left-panel">
             <div class="query-input">
-        <textarea
-                bind:value={$query.sql}
-                placeholder="Enter your SQL query..."
-                onkeydown={(e) => e.ctrlKey && e.key === 'Enter' && executeQuery()}
-        ></textarea>
+                <textarea
+                    bind:value={$query.sql}
+                    placeholder="Enter your SQL query..."
+                    onkeydown={(e) => e.ctrlKey && e.key === 'Enter' && executeQuery()}
+                 ></textarea>
                 <button onclick={executeQuery}>Execute Query</button>
                 <button onclick={executeStatement}>Execute Statement</button>
                 <button onclick={loadTables}>Refresh</button>
@@ -177,19 +177,19 @@
                                 <tbody>
                                 {#each $results.rows as row, index}
                                     <tr>
-                                            {#each row as cell, cellIndex}
-                                                {#if cellIndex !== 0}
-                                                    <td
-                                                            class="can-select-text"
-                                                            data-row={index}
-                                                            data-col={cellIndex}
-                                                            style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
-                                                            ondblclick={(e) => startEditing(e, index, cellIndex, cell)}
-                                                    >
-                                                        {cell}
-                                                    </td>
-                                                {/if}
-                                            {/each}
+                                        {#each row as cell, cellIndex}
+                                            {#if cellIndex !== 0}
+                                                <td
+                                                    class="can-select-text"
+                                                    data-row={index}
+                                                    data-col={cellIndex}
+                                                    style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
+                                                    ondblclick={(e) => startEditing(e, index, cellIndex, cell)}
+                                                >
+                                                    {cell}
+                                                </td>
+                                            {/if}
+                                        {/each}
                                     </tr>
                                 {/each}
                                 </tbody>
@@ -197,14 +197,14 @@
 
                             {#if $editingCell.editing}
                                 <textarea
-                                        class="cell-editor"
-                                        bind:value={editValue}
-                                        style={$editorStyle}
-                                        onblur={saveEdit}
-                                        onkeydown={(e) => {
-                                            if (e.key === 'Enter') saveEdit();
-                                            if (e.key === 'Escape') stopEditing();
-                                        }}
+                                    class="cell-editor"
+                                    bind:value={editValue}
+                                    style={$editorStyle}
+                                    onblur={saveEdit}
+                                    onkeydown={(e) => {
+                                        if (e.key === 'Enter') saveEdit();
+                                        if (e.key === 'Escape') stopEditing();
+                                    }}
                                 ></textarea>
                             {/if}
                         </div>
@@ -377,7 +377,7 @@
         }
 
         color: var(--text-primary);
-        background: var(--bg-primary);
+        /*background: var(--bg-primary);*/
     }
 
 
