@@ -1,6 +1,6 @@
 <script>
-        import { page } from '$app/state';
-
+    import { page } from '$app/state';
+    import Notifications from '$lib/components/notifications.svelte';
 </script>
 
 <div class="app-layout no-select">
@@ -23,6 +23,7 @@
     </header>
 
     <main class="content">
+        <Notifications />
         <slot />
     </main>
 </div>
@@ -30,12 +31,13 @@
 <style>
 
     :global {
-        .no-select {
+        .no-select { /* Disable text selection */
             -webkit-touch-callout: none;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            cursor: default;
         }
         .can-select {
             -webkit-touch-callout: default!important;
@@ -43,6 +45,7 @@
             -moz-user-select: auto!important;
             -ms-user-select: auto!important;
             user-select: auto!important;
+            cursor: auto!important;
         }
         .can-select-text {
             -webkit-touch-callout: default!important;
@@ -50,6 +53,7 @@
             -moz-user-select: text!important;
             -ms-user-select: text!important;
             user-select: text!important;
+            cursor: auto!important;
         }
 
         .can-drag {

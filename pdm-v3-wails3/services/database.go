@@ -119,22 +119,29 @@ func (d *Database) GetSQLite() *sql.DB {
 //	return nil
 //}
 
-func (d *Database) Execute(query string) error {
+func (d *Database) Execute(query string) models.SQLiteResultOutput {
 	log.Printf("Executing statement: %v", query)
 
-	// Use Prepare and Exec to better handle the statement
-	stmt, err := d.sqlDB.Prepare(query)
+	result, err := d.sqlDB.Exec(query)
 	if err != nil {
-		return fmt.Errorf("failed to prepare statement: %v", err)
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec()
-	if err != nil {
-		return fmt.Errorf("failed to execute statement: %v", err)
+		return models.SQLiteResultOutput{Error: err.Error()}
 	}
 
-	return nil
+	// Optionally get affected rows or last insert ID
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return models.SQLiteResultOutput{Error: err.Error()}
+	}
+
+	lastInsertID, err := result.LastInsertId()
+	if err != nil {
+		return models.SQLiteResultOutput{Error: err.Error()}
+	}
+
+	return models.SQLiteResultOutput{
+		RowsAffected: rowsAffected,
+		LastInsertId: lastInsertID,
+	}
 }
 
 func (d *Database) ExecuteQuery(query string) models.QueryResult {

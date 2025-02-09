@@ -16,7 +16,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"strings"
 	"time"
@@ -39,6 +38,7 @@ type Conn struct {
 type Stmt struct {
 	conn *Conn
 	sql  string
+	stmt *C.PDMStatement // Add this to store the prepared statement
 }
 
 // Rows holds an active result set.
@@ -53,6 +53,11 @@ type Rows struct {
 
 type SQLiteTx struct {
 	conn *Conn
+}
+
+type SQLiteResult struct {
+	rowsAffected int64
+	lastInsertId int64
 }
 
 // DSN holds the parsed data source name.
@@ -110,8 +115,19 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 
 // Prepare returns a new prepared statement.
 func (c *Conn) Prepare(query string) (driver.Stmt, error) {
-	log.Printf("Preparing statement: %s", query)
-	return &Stmt{conn: c, sql: query}, nil
+	cQuery := C.CString(query)
+	defer C.free(unsafe.Pointer(cQuery))
+
+	stmt := C.pdm_db_prepare(c.db, cQuery)
+	if stmt == nil {
+		return nil, fmt.Errorf("failed to prepare statement: %s", getLastError(c.db))
+	}
+
+	return &Stmt{
+		conn: c,
+		sql:  query,
+		stmt: stmt,
+	}, nil
 }
 
 // Close closes the connection.
@@ -148,8 +164,14 @@ func (tx *SQLiteTx) Rollback() error {
 	return nil
 }
 
-// Close for Stmt is a no-op.
+// Close properly finalizes the prepared statement.
 func (s *Stmt) Close() error {
+	if s.stmt != nil {
+		if rc := C.pdm_db_finalize(s.stmt); SQLiteResultCode(rc) != SQLITE_OK {
+			return fmt.Errorf("error finalizing statement: %s", getLastError(s.conn.db))
+		}
+		s.stmt = nil
+	}
 	return nil
 }
 
@@ -161,83 +183,84 @@ func (s *Stmt) NumInput() int {
 // bindArgs binds the provided arguments to the prepared statement.
 func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
 	for i, arg := range args {
-		idx := C.int(i + 1)
+		pos := i + 1 // SQLite binding positions are 1-based
 		var rc C.int
+
 		switch v := arg.(type) {
 		case nil:
-			rc = C.pdm_db_bind_null(stmt, idx)
-		case int:
-			rc = C.pdm_db_bind_int(stmt, idx, C.int(v))
+			rc = C.pdm_db_bind_null(stmt, C.int(pos))
 		case int64:
-			rc = C.pdm_db_bind_int64(stmt, idx, C.int64_t(v))
+			rc = C.pdm_db_bind_int64(stmt, C.int(pos), C.int64_t(v))
 		case float64:
-			rc = C.pdm_db_bind_double(stmt, idx, C.double(v))
+			rc = C.pdm_db_bind_double(stmt, C.int(pos), C.double(v))
 		case bool:
-			var intVal C.int
+			val := 0
 			if v {
-				intVal = 1
-			} else {
-				intVal = 0
+				val = 1
 			}
-			rc = C.pdm_db_bind_int(stmt, idx, intVal)
-		case string:
-			cs := C.CString(v)
-			rc = C.pdm_db_bind_text(stmt, idx, cs)
-			C.free(unsafe.Pointer(cs))
+			rc = C.pdm_db_bind_int(stmt, C.int(pos), C.int(val))
 		case []byte:
 			if len(v) > 0 {
-				rc = C.pdm_db_bind_blob(stmt, idx, unsafe.Pointer(&v[0]), C.int(len(v)))
+				rc = C.pdm_db_bind_blob(stmt, C.int(pos), unsafe.Pointer(&v[0]), C.int(len(v)))
 			} else {
-				rc = C.pdm_db_bind_blob(stmt, idx, nil, 0)
+				rc = C.pdm_db_bind_blob(stmt, C.int(pos), nil, 0)
 			}
 		case time.Time:
-			// Convert time.Time to string in SQLite format
-			timeStr := v.UTC().Format("2006-01-02 15:04:05.999")
-			cs := C.CString(timeStr)
-			rc = C.pdm_db_bind_text(stmt, idx, cs)
-			C.free(unsafe.Pointer(cs))
+			cstr := C.CString(v.Format(time.RFC3339))
+			defer C.free(unsafe.Pointer(cstr))
+			rc = C.pdm_db_bind_text(stmt, C.int(pos), cstr)
 		default:
-			return fmt.Errorf("unsupported argument type: %T", v)
+			return fmt.Errorf("unsupported type for binding: %T", arg)
 		}
+
 		if SQLiteResultCode(rc) != SQLITE_OK {
-			return fmt.Errorf("failed to bind parameter at index %d, code %d", int(idx), int(rc))
+			return fmt.Errorf("error binding parameter %d: %v", i, SQLiteResultCode(rc))
 		}
 	}
 	return nil
 }
 
-// Exec prepares, binds, steps, and finalizes the statement for non-query commands.
+// Exec executes a prepared statement with the given arguments.
 func (s *Stmt) Exec(args []driver.Value) (driver.Result, error) {
-	log.Printf("Executing statement: %s", s.sql)
-	cQuery := C.CString(s.sql)
-	defer C.free(unsafe.Pointer(cQuery))
-
-	stmt := C.pdm_db_prepare(s.conn.db, cQuery)
-	if stmt == nil {
-		return nil, errors.New("failed to prepare statement")
-	}
-	defer C.pdm_db_finalize(stmt)
-
-	if err := bindArgs(stmt, args); err != nil {
-		return nil, err
+	if s.stmt == nil {
+		return nil, errors.New("statement was closed or not properly prepared")
 	}
 
-	rc := C.pdm_db_step(stmt)
-
-	// Check for errors first
-	if SQLiteResultCode(rc) == SQLITE_ERROR {
-		return nil, fmt.Errorf("execution failed with code %d: %v", int(rc), SQLiteResultCode(rc).String())
+	// Reset the statement for reuse
+	if rc := C.pdm_db_reset(s.stmt); SQLiteResultCode(rc) != SQLITE_OK {
+		return nil, fmt.Errorf("failed to reset statement: %s", getLastError(s.conn.db))
 	}
 
-	// SQLITE_DONE means success
-	if SQLiteResultCode(rc) == SQLITE_DONE {
-		// Get the number of rows affected
-		rowsAffected := C.pdm_db_last_insert_rowid(s.conn.db)
-		return driver.RowsAffected(rowsAffected), nil
+	// Bind parameters
+	if err := bindArgs(s.stmt, args); err != nil {
+		return nil, fmt.Errorf("failed to bind arguments: %w", err)
 	}
 
-	// Any other result code is unexpected
-	return nil, fmt.Errorf("unexpected result code: %d: %v", int(rc), SQLiteResultCode(rc).String())
+	// Execute the statement
+	var rowsAffected int64
+	var lastInsertId int64
+
+	for {
+		rc := SQLiteResultCode(C.pdm_db_step(s.stmt))
+		switch rc {
+		case SQLITE_DONE:
+			// Get the number of rows affected and last insert ID
+			rowsAffected = int64(C.pdm_db_changes(s.conn.db))
+			lastInsertId = int64(C.pdm_db_last_insert_rowid(s.conn.db))
+			return &SQLiteResult{
+				rowsAffected: rowsAffected,
+				lastInsertId: lastInsertId,
+			}, nil
+		case SQLITE_ROW:
+			// This shouldn't happen for Exec, but handle it anyway
+			continue
+		case SQLITE_BUSY:
+			// Consider implementing retry logic here
+			return nil, fmt.Errorf("database is busy")
+		default:
+			return nil, fmt.Errorf("execution failed: %s", getLastError(s.conn.db))
+		}
+	}
 }
 
 // Query prepares, binds, and returns a Rows object for queries.
@@ -332,4 +355,20 @@ func (r *Rows) Next(dest []driver.Value) error {
 	default:
 		return fmt.Errorf("error stepping through results: %d", int(rc))
 	}
+}
+
+func (r *SQLiteResult) LastInsertId() (int64, error) {
+	return r.lastInsertId, nil
+}
+
+func (r *SQLiteResult) RowsAffected() (int64, error) {
+	return r.rowsAffected, nil
+}
+
+// Helper function to get the last error from SQLite
+func getLastError(db *C.PDMDatabase) string {
+	if errMsg := C.pdm_db_errmsg(db); errMsg != nil {
+		return C.GoString(errMsg)
+	}
+	return "unknown error"
 }

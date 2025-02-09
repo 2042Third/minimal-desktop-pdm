@@ -1,1 +1,4 @@
-<h1>hihihi</h1>
+<script lang="ts">
+
+</script>
+<h1>PDM Encrypted SQLite Viewer</h1>

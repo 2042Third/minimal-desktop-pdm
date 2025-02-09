@@ -4,6 +4,10 @@
     import {NativeModules} from "@pdm/services";
     import {time} from "../../stores/timeStore.js";
 
+    import {notifications} from "@stores/notifications";
+
+
+
     console.log("Mounted");
 
     let resultElement = $state("");
@@ -12,6 +16,15 @@
     let cStringOut = $state("");
     let getString = $state("");
 
+
+    const makeNotification = () => {
+        notifications.add({
+            type: 'success',
+            title: 'Success',
+            message: 'Operation completed successfully',
+            duration: 5000
+        });
+    }
 
     const doGreet = () => {
 
@@ -52,6 +65,7 @@
 
 <div class="about">
     <h1>Hello {name}!</h1>
+    <button onclick={makeNotification}>Create Notification</button>
     <p>Enter your name:</p>
     <input
             bind:value={name}
