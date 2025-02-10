@@ -1,6 +1,8 @@
 <script>
     import { page } from '$app/state';
     import Notifications from '$lib/components/notifications.svelte';
+
+    let {children} = $props();
 </script>
 
 <div class="app-layout ">
@@ -8,14 +10,16 @@
         <h1 class="">PDM Notes</h1>
         <nav>
             <a
-                    href="/wails-tests"
-                    class:active={page.url.pathname === '/wails-tests'}
+                href="/wails-tests"
+                class:active={page.url.pathname === '/wails-tests'}
             >
                 Wails 3
             </a>
             <a
-                    href="/database"
-                    class:active={page.url.pathname === '/database'}
+                href="/database"
+                class:active={page.url.pathname === '/database'}
+                data-sveltekit-preload-data="hover"
+
             >
                 Database
             </a>
@@ -24,7 +28,7 @@
 
     <main class="content">
         <Notifications />
-        <slot />
+        {@render children()}
     </main>
 </div>
 

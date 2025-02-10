@@ -23,6 +23,8 @@ var assets embed.FS
 // logs any error that might occur.
 func main() {
 
+	appState := &services.AppState{}
+
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
 	// 'Assets' configures the asset server with the 'FS' variable pointing to the frontend files.
@@ -33,6 +35,9 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
+			application.NewService(appState, application.ServiceOptions{
+				Name: "AppState",
+			}),
 			application.NewService(&services.NativeModules{
 				CellClicked: func(data *application.Context) {},
 			}),
@@ -102,15 +107,17 @@ func main() {
 		}
 	}()
 
-	appState := services.NewAppState(app, mainWindow)
+	appState.Attach(app, mainWindow)
 	if err := appState.Init(func(data *application.Context) {
 
-		parsed, err := services.CellClickCallBack(data)
-		if err != nil {
-			app.Logger.Error("Error parsing cell info", "error", err.Error())
-			return
-		}
-		app.Logger.Info("Edit Cell Context menu", "cellInfo", parsed)
+		go func(app *application.App, data *application.Context) {
+			parsed, err := services.CellClickCallBack(data)
+			if err != nil {
+				app.Logger.Error("Error parsing cell info", "error", err.Error())
+				return
+			}
+			app.Logger.Info("Edit Cell Context menu", "cellInfo", parsed)
+		}(app, data)
 
 	}); err != nil {
 		log.Fatalf("Error initializing app state: %s", err.Error())

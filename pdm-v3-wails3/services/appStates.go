@@ -16,6 +16,11 @@ func NewAppState(app *application.App, mainWindow *application.WebviewWindow) *A
 	}
 }
 
+func (a *AppState) Attach(app *application.App, mainWindow *application.WebviewWindow) {
+	a.app = app
+	a.mainWindow = mainWindow
+}
+
 func (a *AppState) Init(CellClicked func(data *application.Context)) error {
 	app := a.app
 
@@ -26,7 +31,7 @@ func (a *AppState) Init(CellClicked func(data *application.Context)) error {
 
 	globalContextMenu := app.NewMenu()
 	globalContextMenu.Add("Default context menu item").OnClick(func(data *application.Context) {
-		app.Logger.Info("Context menu", "context data", data.ContextMenuData())
+		app.Logger.Info("Global context menu", "context data", data.ContextMenuData())
 	})
 
 	// Registering the menu with a window will make it available to that window only

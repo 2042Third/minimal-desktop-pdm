@@ -11,7 +11,6 @@
   import { derived } from "svelte/store";
   import { QueryResult } from "@pdm/models";
   import { notifications } from "@stores/notifications";
-  console.log('notifications store:', notifications); // Should show the store methods
 
   // Clean query string
   const cleanQuery = (sql: string) => sql.trim().replace(/\n/g, " ");
@@ -146,6 +145,7 @@
       const textarea = document.querySelector(".cell-editor");
       if (textarea) {
         textarea.focus();
+        textarea.select();
       }
     }, 0);
   }
@@ -200,7 +200,7 @@
         <h3>Available Tables</h3>
         <ul>
           {#each $tables as table}
-          <li onclick={() =>selectTable(table)}> {table}</li>
+            <li onclick={() =>selectTable(table)}> {table}</li>
           {/each}
         </ul>
       </div>
@@ -231,8 +231,6 @@
                   {#if !(cellIndex === 0 && ($results.columns[cellIndex] === 'id' || $results.columns[cellIndex] === 'rowid'))}
                     <td
                       class="can-select-text"
-                      data-row="{index}"
-                      data-col="{cellIndex}"
                       style="--custom-contextmenu: dbTableMenu; --custom-contextmenu-data: {JSON.stringify({ table: $query.table, rowid: row[0], column: $results.columns[cellIndex] })}"
                       ondblclick={(e)=>startEditing(e, index, cellIndex, cell)}
                     >
@@ -251,8 +249,11 @@
               bind:value="{editValue}"
               style="{$editorStyle}"
               onblur="{saveEdit}"
-              onkeydown={(e)=>{if (e.key === 'Enter') saveEdit();
-                               if (e.key === 'Escape') stopEditing();
+
+              onkeydown={
+                              (e)=>{
+                                if (e.key === 'Enter') saveEdit();
+                                if (e.key === 'Escape') stopEditing();
                               }
                         }
             ></textarea>
@@ -360,6 +361,7 @@
   }
 
   .tables-list li:hover {
+
     background: var(--color-background-soft);
   }
 
