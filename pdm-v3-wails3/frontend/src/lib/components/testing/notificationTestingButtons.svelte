@@ -50,7 +50,7 @@
 </script>
 
 
-<button> use:tooltip={{text: 'This is a tooltip'}}
+<button
         onclick={ () => {
         notifications.add({
             type: 'success',
