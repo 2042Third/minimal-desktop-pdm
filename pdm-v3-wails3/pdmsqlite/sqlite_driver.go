@@ -205,6 +205,10 @@ func bindArgs(stmt *C.PDMStatement, args []driver.Value) error {
 			} else {
 				rc = C.pdm_db_bind_blob(stmt, C.int(pos), nil, 0)
 			}
+		case string: // Add this case
+			cstr := C.CString(v)
+			defer C.free(unsafe.Pointer(cstr))
+			rc = C.pdm_db_bind_text(stmt, C.int(pos), cstr)
 		case time.Time:
 			cstr := C.CString(v.Format(time.RFC3339))
 			defer C.free(unsafe.Pointer(cstr))
@@ -326,7 +330,7 @@ func (r *Rows) Next(dest []driver.Value) error {
 					// Try to parse as timestamp if the column name suggests it's a timestamp
 					colName := strings.ToLower(C.GoString(C.pdm_db_column_name(r.stmt, C.int(i))))
 					if strings.Contains(colName, "at") || strings.Contains(colName, "date") || strings.Contains(colName, "time") {
-						if t, err := time.Parse("2006-01-02 15:04:05.999", textStr); err == nil {
+						if t, err := time.Parse(time.RFC3339, textStr); err == nil {
 							val = t
 						} else {
 							val = textStr

@@ -53,7 +53,6 @@ func parseCellInfo(cellInfoJSON string) (*models.CellInfo, error) {
 }
 
 func (d *Database) Open(path, passwd string) {
-
 	if d.sqlDB != nil {
 		panic("Database already open")
 	}
@@ -69,7 +68,7 @@ func (d *Database) Open(path, passwd string) {
 	// Create a new GORM DB instance
 	db, err := gorm.Open(&pdmsqlite.Dialector{
 		DriverName: "pdmsqlite",
-		DSN:        "./test/test.db?password=secret",
+		DSN:        path + "?password=" + passwd,
 		Conn:       sqlDB,
 	}, &gorm.Config{})
 	if err != nil {
@@ -204,7 +203,7 @@ func (d *Database) RunSmallTest() {
 	db := d.GetDB()
 
 	// Migrate the schema
-	err := db.AutoMigrate(&models.User{})
+	err := db.AutoMigrate(models.User{})
 	if err != nil {
 		panic("failed to migrate database")
 	}

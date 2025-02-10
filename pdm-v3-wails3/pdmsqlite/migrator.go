@@ -26,11 +26,24 @@ func (m *Migrator) RunWithoutForeignKey(fc func() error) error {
 	return fc()
 }
 
-func (m Migrator) HasTable(value interface{}) bool {
+func (m *Migrator) HasTable(value interface{}) bool {
 	var count int
-	m.Migrator.RunWithValue(value, func(stmt *gorm.Statement) error {
-		return m.DB.Raw("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", stmt.Table).Row().Scan(&count)
+	err := m.Migrator.RunWithValue(value, func(stmt *gorm.Statement) error {
+		row := m.DB.Raw("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?", stmt.Table).Row()
+		err := row.Scan(&count)
+		if err != nil {
+			fmt.Printf("Scan error: %v\n", err)
+			return err
+		}
+		fmt.Printf("Table check for %s: count = %d\n", stmt.Table, count)
+		return nil
 	})
+
+	if err != nil {
+		fmt.Printf("RunWithValue error: %v\n", err)
+		return false
+	}
+
 	return count > 0
 }
 
