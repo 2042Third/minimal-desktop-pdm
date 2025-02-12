@@ -1,8 +1,9 @@
 package services
 
 import (
-	"bytes"
-	"encoding/gob"
+	"encoding/binary"
+	"errors"
+	"math"
 	"time"
 )
 
@@ -24,47 +25,43 @@ func Key(args ...State) string {
 	return key
 }
 
-func Val(val interface{}) []byte {
-
-	switch i := val.(type) {
-	case nil:
-		return nil
-	case int:
-		buf := new(bytes.Buffer)
-		if err := gob.NewEncoder(buf).Encode(int64(i)); err != nil {
-			panic(err)
-			return nil
-		}
-		return buf.Bytes()
-	case float64:
-		buf := new(bytes.Buffer)
-		if err := gob.NewEncoder(buf).Encode(i); err != nil {
-			panic(err)
-			return nil
-		}
-		return buf.Bytes()
-	case bool: // booleans are c-style integers
-		b := make([]byte, 1)
-		if i {
-			b[0] = 1
-		} else {
-			b[0] = 0
-		}
-		return b
-	case string:
-		return []byte(i)
-	case time.Time:
-		return []byte(i.Format(time.RFC3339))
-	default:
-		buf := new(bytes.Buffer)
-		if err := gob.NewEncoder(buf).Encode(i); err != nil {
-			panic(err)
-			return nil
-		}
-		return buf.Bytes()
-	}
+// ValInt converts an integer to bytes with error handling
+func ValInt(i int64) []byte {
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, uint64(i))
+	return b
 }
 
+// ValFloat converts a float64 to bytes with error handling
+func ValFloat(f float64) []byte {
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint64(b, math.Float64bits(f))
+	return b
+}
+
+// ValTime converts a time.Time to bytes with validation
+func ValTime(t time.Time) ([]byte, error) {
+	if t.IsZero() {
+		return nil, errors.New("zero time value")
+	}
+	return []byte(t.Format(time.RFC3339)), nil
+}
+
+// ValBool converts a bool to bytes
+func ValBool(b bool) []byte {
+	result := make([]byte, 1)
+	if b {
+		result[0] = 1
+	}
+	return result
+}
+
+// ValString ValGob converts a gob-encodable object to bytes
+func ValString(s string) []byte {
+	return []byte(s)
+}
+
+// ToTime Encoding functions
 func ToTime(val []byte, t *time.Time) error {
 	parsed, err := time.Parse(time.RFC3339, string(val))
 	if err != nil {
@@ -72,4 +69,26 @@ func ToTime(val []byte, t *time.Time) error {
 	}
 	*t = parsed
 	return nil
+}
+
+// Decoding functions
+
+// ToInt converts bytes to an integer
+func ToInt(b []byte) int64 {
+	return int64(binary.LittleEndian.Uint64(b))
+}
+
+// ToFloat converts bytes to a float64
+func ToFloat(b []byte) float64 {
+	return math.Float64frombits(binary.LittleEndian.Uint64(b))
+}
+
+// ToBool converts bytes to a bool
+func ToBool(b []byte) bool {
+	return b[0] == 1
+}
+
+// ToString converts bytes to a string
+func ToString(b []byte) string {
+	return string(b)
 }

@@ -56,7 +56,10 @@ func (a *AppState) Init(CellClicked func(data *application.Context)) error {
 	a.app.Logger.Info("Last time open", "time", lastTimeOpen)
 
 	// Save the current time as the last time the app was opened
-	timeBytes := Val(time.Now())
+	timeBytes, err := ValTime(time.Now())
+	if err != nil {
+		a.app.Logger.Error("Failed to convert time to bytes", "error", err)
+	}
 	a.app.Logger.Info("Current time", "time", time.Now())
 	tx := db.Save(&models.AppStatus{Key: Key(MainWindow, LastTimeOpen), Value: timeBytes})
 	if tx.Error != nil {
