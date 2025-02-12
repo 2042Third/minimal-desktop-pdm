@@ -70,7 +70,9 @@ func (d *Database) Open(path, passwd string) {
 		DriverName: "pdmsqlite",
 		DSN:        path + "?password=" + passwd,
 		Conn:       sqlDB,
-	}, &gorm.Config{})
+	}, &gorm.Config{
+		//Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		panic("failed to connect database")
 	}

@@ -35,7 +35,7 @@ func (m *Migrator) HasTable(value interface{}) bool {
 			fmt.Printf("Scan error: %v\n", err)
 			return err
 		}
-		fmt.Printf("Table check for %s: count = %d\n", stmt.Table, count)
+		//fmt.Printf("Table check for %s: count = %d\n", stmt.Table, count)
 		return nil
 	})
 

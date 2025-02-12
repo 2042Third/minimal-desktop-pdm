@@ -18,12 +18,16 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
+//go:embed Compiled.env
+var compiledEnv string
+
 // main function serves as the application's entry point. It initializes the application, creates a window,
 // and starts a goroutine that emits a time-based event every second. It subsequently runs the application and
 // logs any error that might occur.
 func main() {
 
 	appState := &services.AppState{}
+	appState.LoadEnv(string(compiledEnv))
 
 	// Create a new Wails application by providing the necessary options.
 	// Variables 'Name' and 'Description' are for application metadata.
@@ -35,15 +39,12 @@ func main() {
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
 			application.NewService(&GreetService{}),
-			application.NewService(appState, application.ServiceOptions{
-				Name: "AppState",
-			}),
+			application.NewService(appState, application.ServiceOptions{Name: "AppState"}),
 			application.NewService(&services.NativeModules{
 				CellClicked: func(data *application.Context) {},
 			}),
-			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"), application.ServiceOptions{
-				Name: "Database",
-			}),
+			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"),
+				application.ServiceOptions{Name: "Database"}),
 		},
 		Assets: application.AssetOptions{
 			Handler: application.AssetFileServerFS(assets),

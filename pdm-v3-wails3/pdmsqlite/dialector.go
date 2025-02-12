@@ -131,10 +131,6 @@ func (dialector Dialector) Migrator(db *gorm.DB) gorm.Migrator {
 	}
 }
 
-func (m *Migrator) CreateTable(values ...interface{}) error {
-	return m.Migrator.CreateTable(values...)
-}
-
 func (dialector Dialector) DataTypeOf(field *schema.Field) string {
 	switch field.DataType {
 	case schema.Bool:

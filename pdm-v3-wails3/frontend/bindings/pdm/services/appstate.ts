@@ -18,3 +18,8 @@ export function Init(CellClicked: any): Promise<void> & { cancel(): void } {
     let $resultPromise = $Call.ByID(1671903899, CellClicked) as any;
     return $resultPromise;
 }
+
+export function LoadEnv(envContent: string): Promise<void> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(2092664016, envContent) as any;
+    return $resultPromise;
+}

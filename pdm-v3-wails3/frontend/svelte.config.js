@@ -18,7 +18,7 @@ const config = {
         strict: true
     }),
     alias: {
-      '@wailsio/runtime': '../runtime',
+      '@wailsio/runtime': './runtime-debug',
       '@pdm': './bindings/pdm',
       '@stores': './src/stores',
     }

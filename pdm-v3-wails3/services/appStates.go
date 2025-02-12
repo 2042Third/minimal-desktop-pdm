@@ -1,8 +1,9 @@
 package services
 
 import (
-	"fmt"
 	"github.com/wailsapp/wails/v3/pkg/application"
+	"pdm/models"
+	"time"
 )
 
 type AppState struct {
@@ -31,22 +32,37 @@ func (a *AppState) Init(CellClicked func(data *application.Context)) error {
 
 	db := a.configDB.GetGorm()
 
-	// Query to get all table names
-	var tables []string
-	result := db.Raw("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=\"users\"").Scan(&tables)
-	if result.Error != nil {
-		a.app.Logger.Error("failed to list tables: %v", result.Error)
+	err := db.AutoMigrate(models.AppStatus{})
+	if err != nil {
+		return err
 	}
 
-	// Print all table names
-	fmt.Println("Tables in the database:")
-	for _, table := range tables {
-		fmt.Println(table)
+	a.app.Logger.Info(Key(Runtime, "a"))
+
+	// See the last time the app was opened
+
+	// First, get the []byte from the last time the app was opened
+	var lastTimeOpenKV models.AppStatus
+	db.First(&lastTimeOpenKV, "key = ?", Key(MainWindow, LastTimeOpen))
+	if db.Error != nil {
+		a.app.Logger.Error("Failed to get last time open", "error", db.Error)
+	}
+	a.app.Logger.Info("Last time open bytes", "bytes", lastTimeOpenKV.Value)
+	var lastTimeOpen time.Time
+	err = ToTime(lastTimeOpenKV.Value, &lastTimeOpen)
+	if err != nil {
+		a.app.Logger.Error("Failed to convert last time open to time", "error", err)
+	}
+	a.app.Logger.Info("Last time open", "time", lastTimeOpen)
+
+	// Save the current time as the last time the app was opened
+	timeBytes := Val(time.Now())
+	a.app.Logger.Info("Current time", "time", time.Now())
+	tx := db.Save(&models.AppStatus{Key: Key(MainWindow, LastTimeOpen), Value: timeBytes})
+	if tx.Error != nil {
+		a.app.Logger.Error("Failed to save last time open", "error", tx.Error)
 	}
 
-	//a.configDB.db.AutoMigrate(&models.Config{})
-	a.configDB.RunSmallTest()
-	a.configDB.RunQueryTest()
 	return nil
 }
 
@@ -64,7 +80,7 @@ func (a *AppState) initMenus(CellClicked func(data *application.Context)) {
 	})
 
 	// Registering the menu with a window will make it available to that window only
-	a.mainWindow.RegisterContextMenu("test", contextMenu)
+	//a.mainWindow.RegisterContextMenu("test", contextMenu)
 
 	// Registering the menu with the app will make it available to all windows
 	app.RegisterContextMenu("test1", globalContextMenu)
@@ -73,5 +89,9 @@ func (a *AppState) initMenus(CellClicked func(data *application.Context)) {
 	dbTableContextMenu := app.NewMenu()
 	dbTableContextMenu.Add("Edit Cell").OnClick(CellClicked)
 	a.mainWindow.RegisterContextMenu("dbTableMenu", dbTableContextMenu)
+
+}
+
+func (a *AppState) LoadEnv(envContent string) {
 
 }

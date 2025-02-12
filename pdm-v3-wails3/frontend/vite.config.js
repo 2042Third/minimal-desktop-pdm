@@ -14,7 +14,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@wailsio/runtime': path.resolve('../runtime'),
+            '@wailsio/runtime': path.resolve('./runtime-debug'),
             '@pdm': path.resolve('./bindings/pdm'),
             "@stores": path.resolve('./src/stores'),
         },
