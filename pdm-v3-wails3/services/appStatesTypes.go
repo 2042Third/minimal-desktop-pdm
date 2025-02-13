@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"math"
 	"time"
 )
@@ -69,6 +70,16 @@ func ToTime(val []byte, t *time.Time) error {
 	}
 	*t = parsed
 	return nil
+}
+
+func GetTime(val []byte) time.Time {
+	var timeParse time.Time
+	err := ToTime(val, &timeParse)
+	if err != nil {
+		fmt.Printf("Error parsing time: %s", err)
+		return time.Now()
+	}
+	return timeParse
 }
 
 // Decoding functions
