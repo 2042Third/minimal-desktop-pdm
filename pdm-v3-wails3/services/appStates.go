@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/wailsapp/wails/v3/pkg/application"
 	"pdm/models"
+	"pdm/services/util"
 	"time"
 )
 
@@ -107,4 +108,32 @@ func (a *AppState) initMenus(CellClicked func(data *application.Context)) {
 
 func (a *AppState) LoadEnv(envContent string) {
 
+}
+
+func (a *AppState) ReadFileTree() string {
+	result, _ := application.OpenFileDialog().
+		CanChooseFiles(false).
+		CanChooseDirectories(true).
+		CanCreateDirectories(false).
+		ShowHiddenFiles(true).
+		PromptForSingleSelection()
+	if result != "" {
+		// Use selected file path
+		treemap := models.FileTreeMap{
+			Root: &models.FileNode{
+				Name:  result,
+				IsDir: true,
+			},
+		}
+
+		GetFileTreemap(&treemap)
+
+		application.InfoDialog().SetMessage(result).Show()
+		return util.ToJsonString(treemap)
+	} else {
+		a.app.Logger.Error("Failed to open file dialog", "error", "No file selected")
+		application.InfoDialog().SetMessage("No file selected").Show()
+	}
+
+	return ""
 }

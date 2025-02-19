@@ -38,11 +38,9 @@ func main() {
 		Name:        "pdm-v3-wails3",
 		Description: "A demo of using raw HTML & CSS",
 		Services: []application.Service{
-			application.NewService(&GreetService{}),
+			application.NewService(&GreetService{}, application.ServiceOptions{Name: "GreetingService"}),
 			application.NewService(appState, application.ServiceOptions{Name: "AppState"}),
-			application.NewService(&services.NativeModules{
-				CellClicked: func(data *application.Context) {},
-			}),
+			application.NewService(&services.NativeModules{CellClicked: func(data *application.Context) {}}),
 			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"),
 				application.ServiceOptions{Name: "Database"}),
 		},

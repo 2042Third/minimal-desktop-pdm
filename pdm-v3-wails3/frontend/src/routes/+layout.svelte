@@ -16,12 +16,19 @@
                 Wails 3
             </a>
             <a
-                href="/database"
-                class:active={page.url.pathname === '/database'}
-                data-sveltekit-preload-data="hover"
+              href="/database"
+              class:active={page.url.pathname === '/database'}
+              data-sveltekit-preload-data="hover"
 
             >
                 Database
+            </a>
+            <a
+              href="/file-treemap"
+              class:active={page.url.pathname === '/file-treemap'}
+              data-sveltekit-preload-data="hover"
+            >
+                File Treemap
             </a>
         </nav>
     </header>

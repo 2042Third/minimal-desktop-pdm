@@ -23,3 +23,8 @@ export function LoadEnv(envContent: string): Promise<void> & { cancel(): void } 
     let $resultPromise = $Call.ByID(2092664016, envContent) as any;
     return $resultPromise;
 }
+
+export function ReadFileTree(): Promise<string> & { cancel(): void } {
+    let $resultPromise = $Call.ByID(1445429591) as any;
+    return $resultPromise;
+}
