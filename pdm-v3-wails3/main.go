@@ -40,6 +40,7 @@ func main() {
 		Services: []application.Service{
 			application.NewService(&GreetService{}, application.ServiceOptions{Name: "GreetingService"}),
 			application.NewService(appState, application.ServiceOptions{Name: "AppState"}),
+			application.NewService(services.NewFileTreeMapService(), application.ServiceOptions{Name: "FileTreeMapService"}),
 			application.NewService(&services.NativeModules{CellClicked: func(data *application.Context) {}}),
 			application.NewService(services.NewDatabaseWithOptions("./test/test.db", "secret"),
 				application.ServiceOptions{Name: "Database"}),

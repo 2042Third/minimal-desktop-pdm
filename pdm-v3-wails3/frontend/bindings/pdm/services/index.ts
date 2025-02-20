@@ -3,9 +3,11 @@
 
 import * as AppState from "./appstate.js";
 import * as Database from "./database.js";
+import * as FileTreeMapService from "./filetreemapservice.js";
 import * as NativeModules from "./nativemodules.js";
 export {
     AppState,
     Database,
+    FileTreeMapService,
     NativeModules
 };

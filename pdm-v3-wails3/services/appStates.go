@@ -128,7 +128,7 @@ func (a *AppState) ReadFileTree() string {
 
 		GetFileTreemap(&treemap)
 
-		application.InfoDialog().SetMessage(result).Show()
+		//application.InfoDialog().SetMessage(result).Show()
 		return util.ToJsonString(treemap)
 	} else {
 		a.app.Logger.Error("Failed to open file dialog", "error", "No file selected")

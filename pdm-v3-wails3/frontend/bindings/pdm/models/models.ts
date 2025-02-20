@@ -5,6 +5,68 @@
 // @ts-ignore: Unused imports
 import {Create as $Create} from "@wailsio/runtime";
 
+export class FileNode {
+    "name": string;
+    "isDir": boolean;
+    "size": number;
+    "children": (FileNode | null)[];
+
+    /** Creates a new FileNode instance. */
+    constructor($$source: Partial<FileNode> = {}) {
+        if (!("name" in $$source)) {
+            this["name"] = "";
+        }
+        if (!("isDir" in $$source)) {
+            this["isDir"] = false;
+        }
+        if (!("size" in $$source)) {
+            this["size"] = 0;
+        }
+        if (!("children" in $$source)) {
+            this["children"] = [];
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new FileNode instance from a string or object.
+     */
+    static createFrom($$source: any = {}): FileNode {
+        const $$createField3_0 = $$createType2;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("children" in $$parsedSource) {
+            $$parsedSource["children"] = $$createField3_0($$parsedSource["children"]);
+        }
+        return new FileNode($$parsedSource as Partial<FileNode>);
+    }
+}
+
+export class FileTreeMap {
+    "root": FileNode | null;
+
+    /** Creates a new FileTreeMap instance. */
+    constructor($$source: Partial<FileTreeMap> = {}) {
+        if (!("root" in $$source)) {
+            this["root"] = null;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new FileTreeMap instance from a string or object.
+     */
+    static createFrom($$source: any = {}): FileTreeMap {
+        const $$createField0_0 = $$createType1;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("root" in $$parsedSource) {
+            $$parsedSource["root"] = $$createField0_0($$parsedSource["root"]);
+        }
+        return new FileTreeMap($$parsedSource as Partial<FileTreeMap>);
+    }
+}
+
 export class QueryResult {
     "columns": string[];
     "rows": any[][];
@@ -29,8 +91,8 @@ export class QueryResult {
      * Creates a new QueryResult instance from a string or object.
      */
     static createFrom($$source: any = {}): QueryResult {
-        const $$createField0_0 = $$createType0;
-        const $$createField1_0 = $$createType2;
+        const $$createField0_0 = $$createType3;
+        const $$createField1_0 = $$createType5;
         let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
         if ("columns" in $$parsedSource) {
             $$parsedSource["columns"] = $$createField0_0($$parsedSource["columns"]);
@@ -72,6 +134,9 @@ export class SQLiteResultOutput {
 }
 
 // Private type creation functions
-const $$createType0 = $Create.Array($Create.Any);
-const $$createType1 = $Create.Array($Create.Any);
+const $$createType0 = FileNode.createFrom;
+const $$createType1 = $Create.Nullable($$createType0);
 const $$createType2 = $Create.Array($$createType1);
+const $$createType3 = $Create.Array($Create.Any);
+const $$createType4 = $Create.Array($Create.Any);
+const $$createType5 = $Create.Array($$createType4);
