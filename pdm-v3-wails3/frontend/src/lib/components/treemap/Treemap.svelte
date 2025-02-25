@@ -22,19 +22,19 @@
       height={height}
       depth={0}
     />
-    <rect
-      width={width}
-      height={height}
-      fill="none"
-      stroke="red"
-      stroke-width="2"
-    />
+<!--    <rect-->
+<!--      width={width}-->
+<!--      height={height}-->
+<!--      fill="none"-->
+<!--      stroke="red"-->
+<!--      stroke-width="2"-->
+<!--    />-->
   </svg>
 </div>
 
 <style>
     .container {
-        border: 1px solid #ccc;
+        /*border: 1px solid #ccc;*/
         overflow: hidden;
         resize: both;
     }

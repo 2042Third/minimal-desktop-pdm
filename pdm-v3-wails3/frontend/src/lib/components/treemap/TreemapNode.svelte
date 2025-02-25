@@ -1,15 +1,11 @@
 <script>
   import TreemapNode from './TreemapNode.svelte';
 
-  let { node, x, y, width, height, depth } = $props();
+  let { node,parentName, x, y, width, height, depth } = $props();
   let childrenLayout = $state([]);
 
   // Debugging logs
   $effect(() => {
-    console.log(`Node ${node.name} at ${depth}:`,
-      `X: ${x.toFixed(1)}, Y: ${y.toFixed(1)}, ` +
-      `W: ${width.toFixed(1)}, H: ${height.toFixed(1)}`
-    );
 
     childrenLayout = getChildrenLayout();
 
@@ -18,7 +14,9 @@
     console.log(childrenLayout.length);
   });
 
-
+  const ismouseover = () => {
+    console.log(`Mouseover: ${parentName+"/"+node.name}`);
+  };
 
   const getChildrenLayout = () => {
     if (!node.isDir || !node.children?.length) return [];
@@ -26,6 +24,8 @@
     const totalSize = node.size;
     const direction = depth % 2 === 0 ? 'horizontal' : 'vertical';
     let currentPos = 0;
+
+    console.log(node.name);
 
     return node.children.map(child => {
       console.log("Handle children: "+ child.name);
@@ -53,6 +53,7 @@
 
       return {
         node: child,
+        parentName: node.name,
         x: Math.round(childX),
         y: Math.round(childY),
         width: Math.round(childWidth),
@@ -81,6 +82,8 @@
     fill={fillColor}
     stroke="#0ea5e9"
     stroke-width="1"
+    class="tree-node"
+    onmouseover={ismouseover}
   />
 
   {#if textVisible}
@@ -90,6 +93,7 @@
       font-size="12"
       fill="#0c4a6e"
       style="font-family: sans-serif"
+      class="tree-node"
     >
       {node.name.split('/').pop()}
       <tspan x={x + 4} dy="16">{node.size.toLocaleString()} B</tspan>
@@ -100,3 +104,14 @@
     </text>
   {/if}
 {/if}
+
+<style>
+  .tree-node {
+    transition: all 0.2s ease;
+  }
+
+  .tree-node:hover {
+    stroke: black;
+    stroke-width: 2;
+  }
+</style>
