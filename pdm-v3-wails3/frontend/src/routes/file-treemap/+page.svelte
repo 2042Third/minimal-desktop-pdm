@@ -2,6 +2,7 @@
   import {AppState } from "@pdm/services";
   import {FileTreeMap} from "@pdm/models";
   import {notifications} from "@stores/notifications";
+  import {nameDisplay } from '@stores/treemapStore.js';
   import Treemap from "$lib/components/treemap/Treemap.svelte";
   let fileTreeMap: FileTreeMap = $state(FileTreeMap.createFrom());
 
@@ -63,5 +64,6 @@
 
 {#if fileTreeMap.root}
   <h2> {fileTreeMap.root.name}</h2>
+  <p> {$nameDisplay}</p>
   <Treemap data={fileTreeMap.root} />
 {/if}

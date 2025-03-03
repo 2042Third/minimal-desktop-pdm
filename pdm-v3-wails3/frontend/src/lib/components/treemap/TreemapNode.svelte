@@ -1,5 +1,6 @@
 <script>
   import TreemapNode from './TreemapNode.svelte';
+  import {nameDisplay } from '@stores/treemapStore.js';
 
   let { node,parentName, x, y, width, height, depth } = $props();
   let childrenLayout = $state([]);
@@ -16,6 +17,7 @@
 
   const ismouseover = () => {
     console.log(`Mouseover: ${parentName+"/"+node.name}`);
+    $nameDisplay = parentName+"/"+node.name;
   };
 
   const getChildrenLayout = () => {
