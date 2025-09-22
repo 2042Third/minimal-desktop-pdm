@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Call as $Call, Create as $Create} from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -15,88 +15,64 @@ import * as gorm$0 from "../../gorm.io/gorm/models.js";
 // @ts-ignore: Unused imports
 import * as models$0 from "../models/models.js";
 
-export function Close(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2841246318) as any;
-    return $resultPromise;
+export function Close(): $CancellablePromise<void> {
+    return $Call.ByID(2841246318);
 }
 
-export function Execute(query: string): Promise<models$0.SQLiteResultOutput> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(913414865, query) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function Execute(query: string): $CancellablePromise<models$0.SQLiteResultOutput> {
+    return $Call.ByID(913414865, query).then(($result: any) => {
         return $$createType0($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function ExecuteQuery(query: string): Promise<models$0.QueryResult> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(3595892903, query) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function ExecuteQuery(query: string): $CancellablePromise<models$0.QueryResult> {
+    return $Call.ByID(3595892903, query).then(($result: any) => {
         return $$createType1($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function GetDB(): Promise<gorm$0.DB | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(772526788) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function GetDB(): $CancellablePromise<gorm$0.DB | null> {
+    return $Call.ByID(772526788).then(($result: any) => {
         return $$createType3($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function GetGorm(): Promise<gorm$0.DB | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1569253765) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function GetGorm(): $CancellablePromise<gorm$0.DB | null> {
+    return $Call.ByID(1569253765).then(($result: any) => {
         return $$createType3($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function GetName(): Promise<string> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2086215133) as any;
-    return $resultPromise;
+export function GetName(): $CancellablePromise<string> {
+    return $Call.ByID(2086215133);
 }
 
-export function GetSQL(): Promise<sql$0.DB | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2696950202) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function GetSQL(): $CancellablePromise<sql$0.DB | null> {
+    return $Call.ByID(2696950202).then(($result: any) => {
         return $$createType5($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function GetSQLite(): Promise<sql$0.DB | null> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2889310246) as any;
-    let $typingPromise = $resultPromise.then(($result: any) => {
+export function GetSQLite(): $CancellablePromise<sql$0.DB | null> {
+    return $Call.ByID(2889310246).then(($result: any) => {
         return $$createType5($result);
-    }) as any;
-    $typingPromise.cancel = $resultPromise.cancel.bind($resultPromise);
-    return $typingPromise;
+    });
 }
 
-export function Open(path: string, passwd: string): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2763850682, path, passwd) as any;
-    return $resultPromise;
+export function Open(path: string, passwd: string): $CancellablePromise<void> {
+    return $Call.ByID(2763850682, path, passwd);
 }
 
-export function RunQueryTest(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2708218905) as any;
-    return $resultPromise;
+export function RunQueryTest(): $CancellablePromise<void> {
+    return $Call.ByID(2708218905);
 }
 
-export function RunSmallTest(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(710338514) as any;
-    return $resultPromise;
+export function RunSmallTest(): $CancellablePromise<void> {
+    return $Call.ByID(710338514);
 }
 
-export function RunTransactionTest1(): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(353677308) as any;
-    return $resultPromise;
+export function RunTransactionTest1(): $CancellablePromise<void> {
+    return $Call.ByID(353677308);
 }
 
 // Private type creation functions

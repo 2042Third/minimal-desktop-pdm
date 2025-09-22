@@ -5,10 +5,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8285c394-df5e-46bf-abbf-9c4c21be2bc8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/database/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/database/+page.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/context/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/context/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/context/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/context/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/database/sql/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/database/sql/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/database/sql/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/database/sql/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/github.com/wailsapp/wails/v3/pkg/application/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/github.com/wailsapp/wails/v3/pkg/application/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/github.com/wailsapp/wails/v3/pkg/application/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/github.com/wailsapp/wails/v3/pkg/application/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/clause/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/clause/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/clause/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/clause/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/internal.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/logger/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/logger/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/logger/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/logger/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/schema/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/schema/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/gorm.io/gorm/schema/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/gorm.io/gorm/schema/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/log/slog/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/log/slog/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/log/slog/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/log/slog/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/greetservice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/greetservice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/models/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/models/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/models/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/models/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/services/appstate.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/services/appstate.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/services/database.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/services/database.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/services/filetreemapservice.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/services/filetreemapservice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/pdm/services/nativemodules.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/pdm/services/nativemodules.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/reflect/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/reflect/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/reflect/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/reflect/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/strings/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/strings/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/strings/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/strings/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/sync/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/sync/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bindings/sync/models.ts" beforeDir="false" afterPath="$PROJECT_DIR$/bindings/sync/models.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/wails-tests/+page.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/wails-tests/+page.svelte" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,29 +69,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "full-platform-support",
-    "last_opened_file_path": "/Users/mikeyang/GolandProjects/minimal-desktop-pdm/pdm-v3-wails3/frontend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.standard": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.standard": "",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/Users/mikeyang/GolandProjects/minimal-desktop-pdm/pdm-v3-wails3/frontend/node_modules/prettier",
-    "settings.editor.selected.configurable": "settings.javascript.prettier",
-    "ts.external.directory.path": "/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;full-platform-support&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/mikeyang/GolandProjects/minimal-desktop-pdm/pdm-v3-wails3/frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.standard&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.standard&quot;: &quot;&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/Users/mikeyang/GolandProjects/minimal-desktop-pdm/pdm-v3-wails3/frontend/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;settings.javascript.prettier&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Applications/WebStorm.app/Contents/plugins/javascript-plugin/jsLanguageServicesImpl/external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-WS-243.23654.157" />
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-WS-252.26199.162" />
       </set>
     </attachedChunks>
   </component>
@@ -77,6 +109,10 @@
       <updated>1739136311978</updated>
       <workItem from="1739136313032" duration="196000" />
       <workItem from="1739136687406" duration="1033000" />
+      <workItem from="1758390283291" duration="596000" />
+      <workItem from="1758390897643" duration="50000" />
+      <workItem from="1758390956384" duration="1684000" />
+      <workItem from="1758476464650" duration="6579000" />
     </task>
     <servers />
   </component>

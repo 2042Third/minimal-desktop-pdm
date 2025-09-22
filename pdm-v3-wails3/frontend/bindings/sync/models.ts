@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Create as $Create} from "@wailsio/runtime";
+import { Create as $Create } from "@wailsio/runtime";
 
 /**
  * Map is like a Go map[any]any but is safe for concurrent use

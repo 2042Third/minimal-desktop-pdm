@@ -3,28 +3,24 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Call as $Call, Create as $Create} from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as application$0 from "../../github.com/wailsapp/wails/v3/pkg/application/models.js";
 
-export function Attach(app: application$0.App | null, mainWindow: application$0.WebviewWindow | null): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(342809644, app, mainWindow) as any;
-    return $resultPromise;
+export function Attach(app: application$0.App | null, mainWindow: application$0.WebviewWindow | null): $CancellablePromise<void> {
+    return $Call.ByID(342809644, app, mainWindow);
 }
 
-export function Init(CellClicked: any): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1671903899, CellClicked) as any;
-    return $resultPromise;
+export function Init(CellClicked: any): $CancellablePromise<void> {
+    return $Call.ByID(1671903899, CellClicked);
 }
 
-export function LoadEnv(envContent: string): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(2092664016, envContent) as any;
-    return $resultPromise;
+export function LoadEnv(envContent: string): $CancellablePromise<void> {
+    return $Call.ByID(2092664016, envContent);
 }
 
-export function ReadFileTree(): Promise<string> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1445429591) as any;
-    return $resultPromise;
+export function ReadFileTree(): $CancellablePromise<string> {
+    return $Call.ByID(1445429591);
 }

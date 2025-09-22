@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Call as $Call, Create as $Create} from "@wailsio/runtime";
+import { Call as $Call, CancellablePromise as $CancellablePromise, Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -12,15 +12,13 @@ import * as models$0 from "../models/models.js";
 /**
  * FileNodeBindingGen generates the binding for the file node
  */
-export function FileNodeBindingGen(tm: models$0.FileNode | null): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1126426079, tm) as any;
-    return $resultPromise;
+export function FileNodeBindingGen(tm: models$0.FileNode | null): $CancellablePromise<void> {
+    return $Call.ByID(1126426079, tm);
 }
 
 /**
  * FileTreemapBindingGen generates the binding for the file tree map
  */
-export function FileTreemapBindingGen(tm: models$0.FileTreeMap | null): Promise<void> & { cancel(): void } {
-    let $resultPromise = $Call.ByID(1851435689, tm) as any;
-    return $resultPromise;
+export function FileTreemapBindingGen(tm: models$0.FileTreeMap | null): $CancellablePromise<void> {
+    return $Call.ByID(1851435689, tm);
 }

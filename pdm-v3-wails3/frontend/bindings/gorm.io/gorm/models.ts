@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Create as $Create} from "@wailsio/runtime";
+import { Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -26,10 +26,6 @@ import * as strings$0 from "../../strings/models.js";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
 import * as sync$0 from "../../sync/models.js";
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore: Unused imports
-import * as $internal from "./internal.js";
 
 /**
  * ConnPool db conns pool interface
@@ -376,7 +372,7 @@ export class Statement {
      * map columns
      */
     "ColumnMapping": { [_: string]: string };
-    "Joins": $internal.join[];
+    "Joins": join[];
     "Preloads": { [_: string]: any[] };
     "Settings": sync$0.Map;
     "ConnPool": ConnPool;
@@ -602,6 +598,63 @@ export class Statement {
     }
 }
 
+export class join {
+    "Name": string;
+    "Conds": any[];
+    "On": clause$0.Where | null;
+    "Selects": string[];
+    "Omits": string[];
+    "JoinType": clause$0.JoinType;
+
+    /** Creates a new join instance. */
+    constructor($$source: Partial<join> = {}) {
+        if (!("Name" in $$source)) {
+            this["Name"] = "";
+        }
+        if (!("Conds" in $$source)) {
+            this["Conds"] = [];
+        }
+        if (!("On" in $$source)) {
+            this["On"] = null;
+        }
+        if (!("Selects" in $$source)) {
+            this["Selects"] = [];
+        }
+        if (!("Omits" in $$source)) {
+            this["Omits"] = [];
+        }
+        if (!("JoinType" in $$source)) {
+            this["JoinType"] = clause$0.JoinType.$zero;
+        }
+
+        Object.assign(this, $$source);
+    }
+
+    /**
+     * Creates a new join instance from a string or object.
+     */
+    static createFrom($$source: any = {}): join {
+        const $$createField1_0 = $$createType13;
+        const $$createField2_0 = $$createType20;
+        const $$createField3_0 = $$createType9;
+        const $$createField4_0 = $$createType9;
+        let $$parsedSource = typeof $$source === 'string' ? JSON.parse($$source) : $$source;
+        if ("Conds" in $$parsedSource) {
+            $$parsedSource["Conds"] = $$createField1_0($$parsedSource["Conds"]);
+        }
+        if ("On" in $$parsedSource) {
+            $$parsedSource["On"] = $$createField2_0($$parsedSource["On"]);
+        }
+        if ("Selects" in $$parsedSource) {
+            $$parsedSource["Selects"] = $$createField3_0($$parsedSource["Selects"]);
+        }
+        if ("Omits" in $$parsedSource) {
+            $$parsedSource["Omits"] = $$createField4_0($$parsedSource["Omits"]);
+        }
+        return new join($$parsedSource as Partial<join>);
+    }
+}
+
 // Private type creation functions
 const $$createType0 = $Create.Map($Create.Any, $Create.Any);
 const $$createType1 = $Create.Map($Create.Any, $Create.Any);
@@ -614,7 +667,7 @@ const $$createType7 = clause$0.Clause.createFrom;
 const $$createType8 = $Create.Map($Create.Any, $$createType7);
 const $$createType9 = $Create.Array($Create.Any);
 const $$createType10 = $Create.Map($Create.Any, $Create.Any);
-const $$createType11 = $internal.join.createFrom;
+const $$createType11 = join.createFrom;
 const $$createType12 = $Create.Array($$createType11);
 const $$createType13 = $Create.Array($Create.Any);
 const $$createType14 = $Create.Map($Create.Any, $$createType13);
@@ -622,3 +675,5 @@ const $$createType15 = sync$0.Map.createFrom;
 const $$createType16 = schema$0.Schema.createFrom;
 const $$createType17 = $Create.Nullable($$createType16);
 const $$createType18 = strings$0.Builder.createFrom;
+const $$createType19 = clause$0.Where.createFrom;
+const $$createType20 = $Create.Nullable($$createType19);

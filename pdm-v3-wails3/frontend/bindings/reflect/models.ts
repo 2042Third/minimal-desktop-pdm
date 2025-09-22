@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Create as $Create} from "@wailsio/runtime";
+import { Create as $Create } from "@wailsio/runtime";
 
 /**
  * A StructField describes a single field in a struct.
@@ -58,7 +58,7 @@ export class StructField {
             this["Type"] = null;
         }
         if (!("Tag" in $$source)) {
-            this["Tag"] = ("" as StructTag);
+            this["Tag"] = "";
         }
         if (!("Offset" in $$source)) {
             this["Offset"] = 0;

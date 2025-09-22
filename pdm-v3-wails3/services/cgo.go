@@ -14,9 +14,10 @@ void getHelloString(const char* a, int a_size,  char* b) {
 */
 import "C"
 import (
-	"github.com/wailsapp/wails/v3/pkg/application"
 	"log"
 	"unsafe"
+
+	"github.com/wailsapp/wails/v3/pkg/application"
 )
 
 type NativeModules struct {

@@ -3,7 +3,7 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
-import {Create as $Create} from "@wailsio/runtime";
+import { Create as $Create } from "@wailsio/runtime";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore: Unused imports
@@ -98,10 +98,10 @@ export class Field {
             this["EmbeddedBindNames"] = [];
         }
         if (!("DataType" in $$source)) {
-            this["DataType"] = ("" as DataType);
+            this["DataType"] = DataType.$zero;
         }
         if (!("GORMDataType" in $$source)) {
-            this["GORMDataType"] = ("" as DataType);
+            this["GORMDataType"] = DataType.$zero;
         }
         if (!("PrimaryKey" in $$source)) {
             this["PrimaryKey"] = false;
@@ -122,10 +122,10 @@ export class Field {
             this["Readable"] = false;
         }
         if (!("AutoCreateTime" in $$source)) {
-            this["AutoCreateTime"] = (0 as TimeType);
+            this["AutoCreateTime"] = TimeType.$zero;
         }
         if (!("AutoUpdateTime" in $$source)) {
-            this["AutoUpdateTime"] = (0 as TimeType);
+            this["AutoUpdateTime"] = TimeType.$zero;
         }
         if (!("HasDefaultValue" in $$source)) {
             this["HasDefaultValue"] = false;
@@ -167,7 +167,7 @@ export class Field {
             this["StructField"] = (new reflect$0.StructField());
         }
         if (!("Tag" in $$source)) {
-            this["Tag"] = ("" as reflect$0.StructTag);
+            this["Tag"] = "";
         }
         if (!("TagSettings" in $$source)) {
             this["TagSettings"] = {};
@@ -344,7 +344,7 @@ export class Relationship {
             this["Name"] = "";
         }
         if (!("Type" in $$source)) {
-            this["Type"] = ("" as RelationshipType);
+            this["Type"] = RelationshipType.$zero;
         }
         if (!("Field" in $$source)) {
             this["Field"] = null;
